@@ -17,8 +17,13 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Arash")
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<class ASMagicProjectile> ProjectileClass{};
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnim{};
+
+	FTimerHandle TimerHandle_PrimaryAttack;
 	
 public:
 	// Sets default values for this character's properties
@@ -46,5 +51,6 @@ public:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void PrimaryAttack();
+	void PrimaryAttack_TimeElapsed();
 	void PrimaryInteract();
 };

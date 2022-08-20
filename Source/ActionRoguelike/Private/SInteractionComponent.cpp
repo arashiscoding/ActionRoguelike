@@ -47,18 +47,14 @@ void USInteractionComponent::PrimaryInteract()
 	FVector EyeLocation{};
 	FRotator EyeRotation{};
 	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-
 	FVector EndLocation = EyeLocation + (EyeRotation.Vector() * 1000.0f);
-	
-	// GetWorld()->LineTraceSingleByObjectType(Hit, EyeLocation, EndLocation, ObjectQueryParams);
-	
 
 	float ShapeRadius{30.0f};
 	FCollisionShape CollisionShape;
 	CollisionShape.SetSphere(ShapeRadius);
 	
-	bool DidWeBlock = GetWorld()->SweepSingleByObjectType(Hit, EyeLocation, EndLocation, FQuat::Identity, ObjectQueryParams, CollisionShape);
-	FColor DebugShapeColor = DidWeBlock ? FColor::Green : FColor::Red;
+	bool DidItHit = GetWorld()->SweepSingleByObjectType(Hit, EyeLocation, EndLocation, FQuat::Identity, ObjectQueryParams, CollisionShape);
+	FColor DebugShapeColor = DidItHit ? FColor::Green : FColor::Red;
 	
 	if(AActor* HitActor = Hit.GetActor())
 	{
