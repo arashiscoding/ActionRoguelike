@@ -10,6 +10,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class ASMagicProjectile;
 class USInteractionComponent;
+class ASBlackholeProjectile;
+class ASDashProjectile;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -18,15 +20,23 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<class ASMagicProjectile> ProjectileClass{};
+	UAnimMontage* AttackAnim{};
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<ASMagicProjectile> MagicProjectileClass{};
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim{};
+	TSubclassOf<ASBlackholeProjectile> BlackholeProjectileClass{};
 
-	FTimerHandle TimerHandle_PrimaryAttack;
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<ASDashProjectile> DashProjectileClass{};
+
+private:
+	FTimerHandle TimerHandle_PrimaryAttack{};
+	FTimerHandle TimerHandle_Blackhole{};
+	FTimerHandle TimerHandle_Dash{};
 	
 public:
-	// Sets default values for this character's properties
 	ASCharacter();
 
 protected:
@@ -39,18 +49,24 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USInteractionComponent* InteractionComp{};
 	
-	// Called when the game starts or when spawned
+protected:
 	virtual void BeginPlay() override;
-
-public:
-	
 	virtual void Tick(float DeltaTime) override;
-	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
 	void MoveForward(float Value);
 	void MoveRight(float Value);
+
+	void PrimaryInteract();
+	
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
-	void PrimaryInteract();
+
+	void SpawnBlackhole();
+	void SpawnBlackhole_TimeElapsed();
+
+	void PerformDash();
+	void PerformDash_TimeElapsed();
+	
+	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
 };

@@ -2,11 +2,14 @@
 
 #include "SCharacter.h"
 #include "DrawDebugHelpers.h"
+#include "SBlackholeProjectile.h"
 #include "SInteractionComponent.h"
 #include "SMagicProjectile.h"
+#include "SDashProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -54,10 +57,11 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-
-	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+	PlayerInputComponent->BindAction("Blackhole", IE_Pressed, this, &ASCharacter::SpawnBlackhole);
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASCharacter::PerformDash);
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -80,6 +84,11 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
+void ASCharacter::PrimaryInteract()
+{
+	InteractionComp->PrimaryInteract();
+}
+
 void ASCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
@@ -88,20 +97,66 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	
-	FTransform SpawnTM{GetControlRotation(), HandLocation};
-	
-	FActorSpawnParameters SpawnParameters{};
-	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	if(ProjectileClass)
-	{
-		GetWorld()->SpawnActor<ASMagicProjectile>(ProjectileClass, SpawnTM, SpawnParameters);
-	}
+	SpawnProjectile(MagicProjectileClass);
 }
 
-void ASCharacter::PrimaryInteract()
+void ASCharacter::SpawnBlackhole()
 {
-	InteractionComp->PrimaryInteract();
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_Blackhole, this, &ASCharacter::SpawnBlackhole_TimeElapsed, 0.2f);
+}
+
+void ASCharacter::SpawnBlackhole_TimeElapsed()
+{
+	SpawnProjectile(BlackholeProjectileClass);
+}
+
+void ASCharacter::PerformDash()
+{
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_Dash, this, &ASCharacter::PerformDash_TimeElapsed, 0.2f);
+}
+
+void ASCharacter::PerformDash_TimeElapsed()
+{
+	SpawnProjectile(DashProjectileClass);
+}
+
+void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
+{
+	if(ensureAlways(ClassToSpawn))
+	{
+		FCollisionShape CollisionShape{};
+		CollisionShape.SetSphere(20.0f);
+
+		FCollisionQueryParams CollisionQueryParams{};
+		CollisionQueryParams.AddIgnoredActor(this);
+
+		FCollisionObjectQueryParams ObjectQueryParams{};
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		FVector TraceStart{CameraComp->GetComponentLocation()};
+		FVector TraceEnd{TraceStart + (GetControlRotation().Vector() * 5000)};
+
+		FHitResult HitResult{};
+		bool bDidTraceHit{GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape, CollisionQueryParams)};
+		if(bDidTraceHit)
+		{
+			TraceEnd = HitResult.ImpactPoint;
+		}
+		// FColor DebugLineColor{bDidTraceHit ? FColor::Green : FColor::Red};
+		// DrawDebugLine(GetWorld(), TraceStart, TraceEnd, DebugLineColor, false, 2.0f, 0.0f, 2.0f);
+
+		FVector HandLocation{GetMesh()->GetSocketLocation("Muzzle_01")};
+		FRotator ProjectileRotation{UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd)};
+		FTransform SpawnTM{ProjectileRotation, HandLocation};
+
+		FActorSpawnParameters SpawnParameters{};
+		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParameters.Instigator = this;
+
+		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParameters);
+	}
 }
