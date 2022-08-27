@@ -1,15 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
-class ASMagicProjectile;
 class USInteractionComponent;
+class USAttributeComponent;
+
+class ASProjectileBase;
+class ASMagicProjectile;
 class ASBlackholeProjectile;
 class ASDashProjectile;
 
@@ -40,14 +42,17 @@ public:
 	ASCharacter();
 
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp{};
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp{};
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	USInteractionComponent* InteractionComp{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp{};
 	
 protected:
 	virtual void BeginPlay() override;
@@ -68,5 +73,5 @@ protected:
 	void PerformDash();
 	void PerformDash_TimeElapsed();
 	
-	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn);
+	void SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn);
 };

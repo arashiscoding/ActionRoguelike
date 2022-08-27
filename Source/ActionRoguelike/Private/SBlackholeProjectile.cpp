@@ -2,7 +2,6 @@
 
 
 #include "SBlackholeProjectile.h"
-#include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
@@ -17,7 +16,7 @@ ASBlackholeProjectile::ASBlackholeProjectile()
 void ASBlackholeProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASBlackholeProjectile::OnActorBeginOverlap);
+	// SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASBlackholeProjectile::OnActorBeginOverlap);
 }
 
 void ASBlackholeProjectile::BeginPlay()

@@ -14,6 +14,7 @@ ASProjectileBase::ASProjectileBase()
 	SetRootComponent(SphereComp);
 	SphereComp->SetCollisionProfileName("Projectile");
 	SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnActorHit);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectileBase::OnActorBeginOverlap);
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));
 	EffectComp->SetupAttachment(RootComponent);
@@ -48,3 +49,7 @@ void ASProjectileBase::Explode_Implementation()
 	}
 }
 
+void ASProjectileBase::OnActorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	
+}

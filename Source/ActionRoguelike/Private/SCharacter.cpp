@@ -2,8 +2,9 @@
 
 #include "SCharacter.h"
 #include "DrawDebugHelpers.h"
-#include "SBlackholeProjectile.h"
 #include "SInteractionComponent.h"
+#include "SAttributeComponent.h"
+#include "SBlackholeProjectile.h"
 #include "SMagicProjectile.h"
 #include "SDashProjectile.h"
 #include "Camera/CameraComponent.h"
@@ -28,6 +29,8 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>(TEXT("InteractionComp"));
+
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
 }
 
 // Called when the game starts or when spawned
@@ -122,7 +125,7 @@ void ASCharacter::PerformDash_TimeElapsed()
 	SpawnProjectile(DashProjectileClass);
 }
 
-void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
+void ASCharacter::SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn)
 {
 	if(ensureAlways(ClassToSpawn))
 	{
@@ -157,6 +160,6 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn)
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParameters.Instigator = this;
 
-		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParameters);
+		GetWorld()->SpawnActor<ASProjectileBase>(ClassToSpawn, SpawnTM, SpawnParameters);
 	}
 }
