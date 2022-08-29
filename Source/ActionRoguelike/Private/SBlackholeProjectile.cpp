@@ -27,7 +27,7 @@ void ASBlackholeProjectile::BeginPlay()
 
 void ASBlackholeProjectile::DestroyBlackhole()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BP_BlackholeProjectile | Blackhole destroyed!")));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BP_BlackholeProjectile | Blackhole destroyed!")));
 	Destroy();
 }
 
@@ -36,6 +36,6 @@ void ASBlackholeProjectile::OnActorBeginOverlap(UPrimitiveComponent* OverlappedC
 	if(OtherComp->IsSimulatingPhysics())
 	{
 		OtherActor->Destroy();
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BLACKED!")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BLACKED!")));
 	}
 }
