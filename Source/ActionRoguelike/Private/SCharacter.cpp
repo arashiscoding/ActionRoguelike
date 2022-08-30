@@ -33,6 +33,13 @@ ASCharacter::ASCharacter()
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
 }
 
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -46,7 +53,6 @@ void ASCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 }
-
 
 // Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -140,7 +146,7 @@ void ASCharacter::SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn)
 		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
 		ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
-		FVector TraceStart{CameraComp->GetComponentLocation()};
+		FVector TraceStart{(CameraComp->GetComponentLocation()) + ((GetControlRotation().Vector() * 30))};
 		FVector TraceEnd{TraceStart + (GetControlRotation().Vector() * 5000)};
 
 		FHitResult HitResult{};
@@ -162,4 +168,31 @@ void ASCharacter::SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn)
 
 		GetWorld()->SpawnActor<ASProjectileBase>(ClassToSpawn, SpawnTM, SpawnParameters);
 	}
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if(Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("HitFlashSpeed", 4.0f);
+		GetMesh()->SetVectorParameterValueOnMaterials("HitFlashColor", FVector{0.8f, 0.0f, 0.0f});
+		GetMesh()->SetScalarParameterValueOnMaterials("HitReceivedTime", GetWorld()->TimeSeconds);
+	}
+	else
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("HitFlashSpeed", 2.5f);
+		GetMesh()->SetVectorParameterValueOnMaterials("HitFlashColor", FVector{0.0f, 0.8f, 0.0f});
+		GetMesh()->SetScalarParameterValueOnMaterials("HitReceivedTime", GetWorld()->TimeSeconds);
+	}
+	
+	if(NewHealth <= 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
+	}
+}
+
+FVector ASCharacter::GetCameraLocation() const
+{
+	return CameraComp->GetComponentLocation();
 }

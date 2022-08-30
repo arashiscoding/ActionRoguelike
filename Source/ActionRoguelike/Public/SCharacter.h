@@ -55,6 +55,7 @@ protected:
 	USAttributeComponent* AttributeComp{};
 	
 protected:
+	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -74,4 +75,10 @@ protected:
 	void PerformDash_TimeElapsed();
 	
 	void SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn);
+	
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+public:
+	FVector GetCameraLocation() const;
 };

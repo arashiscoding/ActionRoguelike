@@ -6,6 +6,7 @@
 #include "SBlackholeProjectile.generated.h"
 
 class URadialForceComponent;
+class UAudioComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASBlackholeProjectile : public ASProjectileBase
@@ -18,6 +19,9 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	URadialForceComponent* RadialForceComp{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UAudioComponent* AudioComp{};
 
 protected:
 	virtual void PostInitializeComponents() override;

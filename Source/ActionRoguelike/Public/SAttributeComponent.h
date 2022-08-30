@@ -19,12 +19,26 @@ public:
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float Health{100.0f};
+	float MaxHealth{100.0f};
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	float Health{};
 
 public:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged{};
 	
 	UFUNCTION(BlueprintCallable)
 	bool ApplyHealthChange(float Delta);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDamaged() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth() const;
 };
