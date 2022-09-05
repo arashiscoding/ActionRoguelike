@@ -3,7 +3,7 @@
 #include "SPowerupActor.h"
 #include "Components/SphereComponent.h"
 
-// Sets default values
+
 ASPowerupActor::ASPowerupActor()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
@@ -11,6 +11,7 @@ ASPowerupActor::ASPowerupActor()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)

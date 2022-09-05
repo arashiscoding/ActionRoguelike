@@ -16,25 +16,24 @@ void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, u
 		AActor* TargetActor = Cast<AActor>(BlackboardComp->GetValueAsObject("TargetActor"));
 		if(TargetActor)
 		{
-			AAIController* MyAIController = OwnerComp.GetAIOwner();
-			if(ensure(MyAIController))
+			AAIController* AIController = OwnerComp.GetAIOwner();
+			if(ensure(AIController))
 			{
-				APawn* AIPawn = MyAIController->GetPawn();
+				APawn* AIPawn = AIController->GetPawn();
 				if(ensure(AIPawn))
 				{
 					float DistanceTo = (AIPawn->GetActorLocation() - TargetActor->GetActorLocation()).Size();
 					bool bWithinRange = DistanceTo < AttackRangeDistance;
 					
-					bool bHasLOS{};
+					bool bHasLineOfSight{};
 					if(bWithinRange)
 					{
-						bHasLOS = MyAIController->LineOfSightTo(TargetActor);
+						bHasLineOfSight = AIController->LineOfSightTo(TargetActor);
 					}
 					
-					BlackboardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, (bWithinRange && bHasLOS));
+					BlackboardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, (bWithinRange && bHasLineOfSight));
 				}
 			}
 		}
 	}
 }
- 

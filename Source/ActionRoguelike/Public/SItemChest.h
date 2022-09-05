@@ -19,17 +19,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UStaticMeshComponent* LidMesh{};
 	
-public:	
-	// Sets default values for this actor's properties
+public:
 	ASItemChest();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 private:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;

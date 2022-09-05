@@ -20,7 +20,7 @@ ASBlackholeProjectile::ASBlackholeProjectile()
 void ASBlackholeProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	// SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASBlackholeProjectile::OnActorBeginOverlap);
+	
 }
 
 void ASBlackholeProjectile::BeginPlay()
@@ -32,7 +32,6 @@ void ASBlackholeProjectile::BeginPlay()
 
 void ASBlackholeProjectile::DestroyBlackhole()
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BP_BlackholeProjectile | Blackhole destroyed!")));
 	AudioComp->Deactivate();
 	Destroy();
 }
@@ -42,6 +41,5 @@ void ASBlackholeProjectile::OnActorBeginOverlap(UPrimitiveComponent* OverlappedC
 	if(OtherComp->IsSimulatingPhysics())
 	{
 		OtherActor->Destroy();
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("BLACKED!")));
 	}
 }

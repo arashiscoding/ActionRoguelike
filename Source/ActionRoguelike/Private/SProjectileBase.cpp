@@ -11,8 +11,6 @@ ASProjectileBase::ASProjectileBase()
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SetRootComponent(SphereComp);
 	SphereComp->SetCollisionProfileName("Projectile");
-	SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnActorHit);
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectileBase::OnActorBeginOverlap);
 
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EffectComp"));
 	EffectComp->SetupAttachment(RootComponent);
@@ -28,6 +26,8 @@ void ASProjectileBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
+	SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnActorHit);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectileBase::OnActorBeginOverlap);
 }
 
 void ASProjectileBase::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

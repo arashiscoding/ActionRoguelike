@@ -21,6 +21,9 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(VisibleDefaultsOnly, Category = "Attack")
+	FName HandSocketName{"Muzzle_01"};
+	
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim{};
 	
@@ -33,6 +36,34 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<ASDashProjectile> DashProjectileClass{};
 
+
+	//Parameter's name in character's material
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
+	FName HitReceivedTimeName{"HitReceivedTime"};
+
+	//Parameter's name in character's material
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
+	FName HitFlashSpeedName{"HitFlashSpeed"};
+
+	//Parameter's name in character's material
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
+	FName HitFlashColorName{"HitFlashColor"};
+
+	// Material Vector Parameter value, represents RGB
+	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
+	FVector HitFlashDamageColorValue{1.0f, 0.04f, 0.0f};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
+	float HitFlashDamageSpeed{4.0f};
+
+	// Material Vector Parameter value, represents RGB
+	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
+	FVector HitFlashHealColorValue{0.0f, 0.8f, 0.0f};
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
+	float HitFlashHealSpeed{2.5f};
+
+	
 private:
 	FTimerHandle TimerHandle_PrimaryAttack{};
 	FTimerHandle TimerHandle_Blackhole{};
@@ -42,16 +73,16 @@ public:
 	ASCharacter();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USInteractionComponent* InteractionComp{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp{};
 	
 protected:

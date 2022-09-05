@@ -148,7 +148,7 @@ void ASCharacter::SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn)
 
 		FVector TraceStart{(CameraComp->GetComponentLocation()) + ((GetControlRotation().Vector() * 30))};
 		FVector TraceEnd{TraceStart + (GetControlRotation().Vector() * 5000)};
-
+		
 		FHitResult HitResult{};
 		bool bDidTraceHit{GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape, CollisionQueryParams)};
 		if(bDidTraceHit)
@@ -157,11 +157,11 @@ void ASCharacter::SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn)
 		}
 		// FColor DebugLineColor{bDidTraceHit ? FColor::Green : FColor::Red};
 		// DrawDebugLine(GetWorld(), TraceStart, TraceEnd, DebugLineColor, false, 2.0f, 0.0f, 2.0f);
-
-		FVector HandLocation{GetMesh()->GetSocketLocation("Muzzle_01")};
+		
+		FVector HandLocation{GetMesh()->GetSocketLocation(HandSocketName)};
 		FRotator ProjectileRotation{UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd)};
 		FTransform SpawnTM{ProjectileRotation, HandLocation};
-
+		
 		FActorSpawnParameters SpawnParameters{};
 		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParameters.Instigator = this;
@@ -174,15 +174,15 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 {
 	if(Delta < 0.0f)
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("HitFlashSpeed", 4.0f);
-		GetMesh()->SetVectorParameterValueOnMaterials("HitFlashColor", FVector{0.8f, 0.0f, 0.0f});
-		GetMesh()->SetScalarParameterValueOnMaterials("HitReceivedTime", GetWorld()->TimeSeconds);
+		GetMesh()->SetScalarParameterValueOnMaterials(HitFlashSpeedName, HitFlashDamageSpeed);
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorName, HitFlashDamageColorValue);
+		GetMesh()->SetScalarParameterValueOnMaterials(HitReceivedTimeName, GetWorld()->TimeSeconds);
 	}
 	else
 	{
-		GetMesh()->SetScalarParameterValueOnMaterials("HitFlashSpeed", 2.5f);
-		GetMesh()->SetVectorParameterValueOnMaterials("HitFlashColor", FVector{0.0f, 0.8f, 0.0f});
-		GetMesh()->SetScalarParameterValueOnMaterials("HitReceivedTime", GetWorld()->TimeSeconds);
+		GetMesh()->SetScalarParameterValueOnMaterials(HitFlashSpeedName, HitFlashHealSpeed);
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorName, HitFlashHealColorValue);
+		GetMesh()->SetScalarParameterValueOnMaterials(HitReceivedTimeName, GetWorld()->TimeSeconds);
 	}
 	
 	if(NewHealth <= 0.0f)

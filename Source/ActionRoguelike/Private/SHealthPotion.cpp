@@ -2,7 +2,6 @@
 
 
 #include "SHealthPotion.h"
-
 #include "SAttributeComponent.h"
 
 ASHealthPotion::ASHealthPotion()
