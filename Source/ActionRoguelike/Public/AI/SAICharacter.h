@@ -25,8 +25,18 @@ protected:
 	USAttributeComponent* AttributeComp{};
 
 protected:
+	//Parameter's name in character's material
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
+	FName HitReceivedTimeName{"HitReceivedTime"};
+
+protected:
 	virtual void PostInitializeComponents() override;
 
 	UFUNCTION()
 	void OnSeePawn(APawn* Pawn);
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	void SetTargetActor(AActor* TargetActor);
 };

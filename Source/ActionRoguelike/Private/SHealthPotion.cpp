@@ -13,16 +13,16 @@ void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
 	if(!ensure(InstigatorPawn)) { return; }
 	
-	USAttributeComponent* AttributeComponent = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
+	USAttributeComponent* AttributeComponent = USAttributeComponent::GetAttributeComp(InstigatorPawn);
 	if(ensure(AttributeComponent) && AttributeComponent->IsDamaged())
 	{
 		if(ShouldFullyHeal)
 		{
-			AttributeComponent->ApplyHealthChange(AttributeComponent->GetMaxHealth());
+			AttributeComponent->ApplyHealthChange(this, AttributeComponent->GetMaxHealth());
 		}
 		else
 		{
-			AttributeComponent->ApplyHealthChange(HealingAmount);
+			AttributeComponent->ApplyHealthChange(this, HealingAmount);
 		}
 		
 		DisablePowerup();

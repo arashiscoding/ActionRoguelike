@@ -20,6 +20,31 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::SpawnBot()
 {
+	int32 NumberOfAliveBots{};
+	for(TActorIterator<ASAICharacter> It{GetWorld()}; It; ++It)
+	{
+		ASAICharacter* Bot = *It;
+
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(Bot);
+		if(AttributeComp && AttributeComp->IsAlive())
+		{
+			NumberOfAliveBots++;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("SGameMode | Alive Bots: %d"), NumberOfAliveBots);
+	
+	if(CurveFloat_SpawnBotDifficulty)
+	{
+		MaxBotCount = CurveFloat_SpawnBotDifficulty->GetFloatValue(GetWorld()->TimeSeconds);
+	}
+	
+	if(NumberOfAliveBots >= MaxBotCount)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SGameMode | At maximum bot capacity. Skipping bot spawn."));
+		return;
+	}
+	
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if(ensureMsgf(QueryInstance, TEXT("Add SpawnBotQuery to SGameModeBase")))
 	{
@@ -34,33 +59,6 @@ void ASGameModeBase::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* 
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("SGameMode | Spawn Bot EQS query failed!")));
 		return;
 	}
-
-	int32 NumberOfAliveBots{};
-	for(TActorIterator<ASAICharacter> It{GetWorld()}; It; ++It)
-	{
-		ASAICharacter* Bot = *It;
-
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(Bot->GetComponentByClass(USAttributeComponent::StaticClass()));
-		if(AttributeComp && AttributeComp->IsAlive())
-		{
-			NumberOfAliveBots++;
-		}
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("SGameMode | Alive Bots: %d"), NumberOfAliveBots);
-
-	float MaxBotCount = 10.0f;
-	if(CurveFloat_SpawnBotDifficulty)
-	{
-		MaxBotCount = CurveFloat_SpawnBotDifficulty->GetFloatValue(GetWorld()->TimeSeconds);
-	}
-	
-	if(NumberOfAliveBots >= MaxBotCount)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("SGameMode | At maximum bot capacity. Skipping bot spawn."));
-		return;
-	}
-	
 	
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 	if(Locations.IsValidIndex(0))

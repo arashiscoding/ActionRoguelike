@@ -19,6 +19,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<ASMagicProjectile> MagicProjectileClass{};
+
+	// maximum bullet spread for pitch and yaw in degree
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float MaxBulletSpread{2.0f};
 	
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;

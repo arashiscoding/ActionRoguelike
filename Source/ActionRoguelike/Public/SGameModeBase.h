@@ -31,6 +31,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* CurveFloat_SpawnBotDifficulty{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	float MaxBotCount = 10.0f;
 	
 protected:
 	FTimerHandle TimerHandle_SpawnBot;

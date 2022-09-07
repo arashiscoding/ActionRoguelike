@@ -31,10 +31,10 @@ void ASMagicProjectile::OnActorBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, OtherActor->GetActorLocation(), FRotator::ZeroRotator);
 		
-		USAttributeComponent* AttributeComponent = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		USAttributeComponent* AttributeComponent = USAttributeComponent::GetAttributeComp(OtherActor);
 		if(AttributeComponent)
 		{
-			AttributeComponent->ApplyHealthChange(-DamageAmount);
+			AttributeComponent->ApplyHealthChange(GetInstigator(), -DamageAmount);
 
 			Destroy();
 		}
