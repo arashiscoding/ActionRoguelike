@@ -13,18 +13,17 @@ void USAttributeComponent::BeginPlay()
 	Health = MaxHealth;
 }
 
-bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
+void USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	float OldHealth = Health;
+	// "God" console command will change "CanBeDamaged" property for player pawn
+	if(!GetOwner()->CanBeDamaged() && Delta < 0.0f)
+	{
+		return;
+	}
 	
 	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
 	
-	// if health was zero and we got damage, Delta would be like -20 but the ActualDelta would be 0;
-	// meaning it didn't actually make a change
-	float ActualDelta = Health - OldHealth;
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-	
-	return ActualDelta != 0;
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, Delta);
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -40,6 +39,11 @@ bool USAttributeComponent::IsDamaged() const
 float USAttributeComponent::GetMaxHealth() const
 {
 	return MaxHealth;
+}
+
+void USAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	ApplyHealthChange(InstigatorActor, -GetMaxHealth());
 }
 
 USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)

@@ -45,4 +45,7 @@ protected:
 
 	UFUNCTION()
 	void OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	UFUNCTION(Exec)
+	void KillAllBots();
 };

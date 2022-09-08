@@ -110,6 +110,13 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
+	/**
+	 * Functions marked with Exec can be used as console commands
+	 * Exec works only in few places: PlayerController, Playable Character, GameMode, CheatManager
+	 */
+	UFUNCTION(Exec)
+	void HealSelf(float Amount = 100.0f);
+
 public:
 	FVector GetCameraLocation() const;
 };

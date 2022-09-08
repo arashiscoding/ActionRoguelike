@@ -37,7 +37,7 @@ public:
 	FOnHealthChanged OnHealthChanged{};
 	
 	UFUNCTION(BlueprintCallable)
-	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
+	void ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
@@ -47,4 +47,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetMaxHealth() const;
+
+	UFUNCTION(BlueprintCallable)
+	void Kill(AActor* InstigatorActor);
 };
