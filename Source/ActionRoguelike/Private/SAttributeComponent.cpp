@@ -26,6 +26,11 @@ void USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, Delta);
 }
 
+float USAttributeComponent::GetHealth() const
+{
+	return Health;
+}
+
 bool USAttributeComponent::IsAlive() const
 {
 	return Health > 0.0f;
