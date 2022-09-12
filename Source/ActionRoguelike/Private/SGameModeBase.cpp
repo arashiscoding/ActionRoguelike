@@ -1,11 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SGameModeBase.h"
-
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
+#include "SCharacter.h"
 #include "AI/SAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+
+// marking it as a cheat, won't include it in final build
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ara.SpawnBots"), true, TEXT("Enable spawning of bots."), ECVF_Cheat);
 
 ASGameModeBase::ASGameModeBase()
 {
@@ -20,6 +23,12 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::SpawnBot()
 {
+	if(!CVarSpawnBots.GetValueOnGameThread())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Bot spawning disabled via cvar 'CVarSpawnBots | ara.SpawnBots'"));
+		return;
+	}
+	
 	int32 NumberOfAliveBots{};
 	for(TActorIterator<ASAICharacter> It{GetWorld()}; It; ++It)
 	{
@@ -32,7 +41,7 @@ void ASGameModeBase::SpawnBot()
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("SGameMode | Alive Bots: %d"), NumberOfAliveBots);
+	UE_LOG(LogTemp, Log, TEXT("SGameMode | Alive Bots: %d"), NumberOfAliveBots);
 	
 	if(CurveFloat_SpawnBotDifficulty)
 	{
@@ -41,7 +50,7 @@ void ASGameModeBase::SpawnBot()
 	
 	if(NumberOfAliveBots >= MaxBotCount)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SGameMode | At maximum bot capacity. Skipping bot spawn."));
+		UE_LOG(LogTemp, Log, TEXT("SGameMode | At maximum bot capacity. Skipping bot spawn."));
 		return;
 	}
 	
@@ -78,5 +87,32 @@ void ASGameModeBase::KillAllBots()
 		{
 			AttributeComp->Kill(this);
 		}
+	}
+}
+
+void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
+{
+	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
+	if(Player)
+	{
+		FTimerHandle TimerHandle_RespawnPlayer{};
+		
+		FTimerDelegate Delegate{};
+		Delegate.BindUFunction(this, "RespawnPlayerDelayed", Player->GetController());
+
+		float PlayerRespawnDelay{2.0f};
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnPlayer, Delegate, PlayerRespawnDelay, false);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+}
+
+void ASGameModeBase::RespawnPlayerDelayed(AController* Controller)
+{
+	if(ensure(Controller))
+	{
+		Controller->UnPossess();
+
+		RestartPlayer(Controller);
 	}
 }

@@ -48,4 +48,10 @@ protected:
 
 	UFUNCTION(Exec)
 	void KillAllBots();
+
+	UFUNCTION()
+	void RespawnPlayerDelayed(AController* Controller);
+
+public:
+	virtual void OnActorKilled(AActor* VictimActor, AActor* KillerActor);
 };

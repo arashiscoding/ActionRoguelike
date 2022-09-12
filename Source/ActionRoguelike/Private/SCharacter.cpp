@@ -178,7 +178,7 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorName, HitFlashDamageColorValue);
 		GetMesh()->SetScalarParameterValueOnMaterials(HitReceivedTimeName, GetWorld()->TimeSeconds);
 	}
-	else
+	else if(Delta > 0.0f)
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials(HitFlashSpeedName, HitFlashHealSpeed);
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFlashColorName, HitFlashHealColorValue);

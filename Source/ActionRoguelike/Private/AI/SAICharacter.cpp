@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Widget/SWorldUserWidget.h"
 
@@ -19,6 +20,9 @@ ASAICharacter::ASAICharacter()
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -62,7 +66,8 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 	}
 
 	GetMesh()->SetScalarParameterValueOnMaterials(HitReceivedTimeName, GetWorld()->TimeSeconds);
-		
+
+	// Died
 	if(!AttributeComp->IsAlive())
 	{
 		// stop BehaviorTree
@@ -76,8 +81,10 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 		GetMesh()->SetCollisionProfileName("Ragdoll");
 		GetMesh()->SetAllBodiesSimulatePhysics(true);
 
-		// ignore Magic Projectile
-		GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+		// disable collision to avoid colliding with player and projectiles
+		// disable CharacterMovement to avoid applying gravity when there's no collision
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCharacterMovement()->DisableMovement();
 
 		// SetLifeSpan will destroy the actor after this amount of time(s)
 		SetLifeSpan(10.0f);

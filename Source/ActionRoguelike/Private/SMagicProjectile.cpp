@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SMagicProjectile.h"
-
-#include "SAttributeComponent.h"
+#include "SGameplayFunctionLibrary.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -31,13 +30,9 @@ void ASMagicProjectile::OnActorBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, OtherActor->GetActorLocation(), FRotator::ZeroRotator);
 		
-		USAttributeComponent* AttributeComponent = USAttributeComponent::GetAttributeComp(OtherActor);
-		if(AttributeComponent)
-		{
-			AttributeComponent->ApplyHealthChange(GetInstigator(), -DamageAmount);
-
-			Destroy();
-		}
+		USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult);
+		
+		Destroy();
 	}
 }
 
@@ -45,5 +40,6 @@ void ASMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Ot
 {
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, Hit.ImpactPoint, FRotator::ZeroRotator);
 	AudioComp->Deactivate();
+	
 	Super::OnActorHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 }

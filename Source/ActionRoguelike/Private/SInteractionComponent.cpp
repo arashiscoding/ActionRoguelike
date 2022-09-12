@@ -5,6 +5,7 @@
 #include "SCharacter.h"
 #include "SGameplayInterface.h"
 
+static TAutoConsoleVariable<bool> CVarDrawDebugInteractions(TEXT("ara.DrawDebugInteractions"), false, TEXT("Enable debug lines for Interaction component"), ECVF_Cheat);
 
 USInteractionComponent::USInteractionComponent()
 {
@@ -33,18 +34,26 @@ void USInteractionComponent::PrimaryInteract()
 	float ShapeRadius{30.0f};
 	CollisionShape.SetSphere(ShapeRadius);
 
-	//GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape);
-
+	
 	bool DidItHit = GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape);
+	
 	FColor DebugShapeColor = DidItHit ? FColor::Green : FColor::Red;
+	
+	bool bDrawDebug = CVarDrawDebugInteractions.GetValueOnGameThread();
 
 	if (AActor* HitActor = HitResult.GetActor())
 	{
 		if (HitActor->Implements<USGameplayInterface>()) //whenever we want to check or cast, we use U
 		{
 			ISGameplayInterface::Execute_Interact(HitActor, MyOwner); //whenever we want to call it, we use I
-			DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, ShapeRadius, 16, DebugShapeColor, false, 2.0f);
+			if(bDrawDebug)
+			{
+				DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, ShapeRadius, 16, DebugShapeColor, false, 2.0f);
+			}
 		}
 	}
-	DrawDebugLine(GetWorld(), TraceStart, TraceEnd, DebugShapeColor, false, 2.0f, 0, 2);
+	if(bDrawDebug)
+	{
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, DebugShapeColor, false, 2.0f, 0, 2);
+	}
 }

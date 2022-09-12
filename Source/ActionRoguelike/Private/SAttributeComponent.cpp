@@ -2,6 +2,8 @@
 
 #include "SAttributeComponent.h"
 
+#include "SGameModeBase.h"
+
 USAttributeComponent::USAttributeComponent()
 {
 	
@@ -13,17 +15,33 @@ void USAttributeComponent::BeginPlay()
 	Health = MaxHealth;
 }
 
-void USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
+bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	// "God" console command will change "CanBeDamaged" property for player pawn
 	if(!GetOwner()->CanBeDamaged() && Delta < 0.0f)
 	{
-		return;
+		return false;
 	}
+
+	float OldHealth = Health;
 	
 	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
+
+	// if ActualDelta would be 0, it would mean health didn't change. Either at full health, or has died.
+	float ActualDelta = Health - OldHealth;
 	
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, Delta);
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	if(Health <= 0)
+	{
+		ASGameModeBase* SGameMode = GetWorld()->GetAuthGameMode<ASGameModeBase>();
+		if(SGameMode)
+		{
+			SGameMode->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+	}
+
+	return ActualDelta != 0.0f;
 }
 
 float USAttributeComponent::GetHealth() const
@@ -46,9 +64,9 @@ float USAttributeComponent::GetMaxHealth() const
 	return MaxHealth;
 }
 
-void USAttributeComponent::Kill(AActor* InstigatorActor)
+bool USAttributeComponent::Kill(AActor* InstigatorActor)
 {
-	ApplyHealthChange(InstigatorActor, -GetMaxHealth());
+	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
 }
 
 USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)
