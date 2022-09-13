@@ -9,11 +9,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class USInteractionComponent;
 class USAttributeComponent;
-
-class ASProjectileBase;
-class ASMagicProjectile;
-class ASBlackholeProjectile;
-class ASDashProjectile;
+class USActionComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -21,22 +17,6 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(VisibleDefaultsOnly, Category = "Attack")
-	FName HandSocketName{"Muzzle_01"};
-	
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim{};
-	
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ASMagicProjectile> MagicProjectileClass{};
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ASBlackholeProjectile> BlackholeProjectileClass{};
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<ASDashProjectile> DashProjectileClass{};
-
-
 	//Parameter's name in character's material
 	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
 	FName HitReceivedTimeName{"HitReceivedTime"};
@@ -62,12 +42,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
 	float HitFlashHealSpeed{2.5f};
-
-	
-private:
-	FTimerHandle TimerHandle_PrimaryAttack{};
-	FTimerHandle TimerHandle_Blackhole{};
-	FTimerHandle TimerHandle_Dash{};
 	
 public:
 	ASCharacter();
@@ -84,39 +58,38 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp{};
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USActionComponent* ActionComp{};
 	
 protected:
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 
+	void SprintStart();
+	void SprintStop();
+
 	void PrimaryInteract();
 	
 	void PrimaryAttack();
-	void PrimaryAttack_TimeElapsed();
-
 	void SpawnBlackhole();
-	void SpawnBlackhole_TimeElapsed();
-
 	void PerformDash();
-	void PerformDash_TimeElapsed();
-	
-	void SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn);
 	
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
+public:
+	FVector GetPawnViewLocation() const override;
+	
+private:
 	/**
 	 * Functions marked with Exec can be used as console commands
 	 * Exec works only in few places: PlayerController, Playable Character, GameMode, CheatManager
 	 */
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.0f);
-
-public:
-	FVector GetCameraLocation() const;
 };

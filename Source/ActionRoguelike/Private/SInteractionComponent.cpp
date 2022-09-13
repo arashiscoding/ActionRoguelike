@@ -23,7 +23,7 @@ void USInteractionComponent::PrimaryInteract()
 
 	FHitResult HitResult{};
 
-	FVector TraceStart{MyOwner->GetCameraLocation() + (MyOwner->GetControlRotation().Vector() * 30.0f)};
+	FVector TraceStart{MyOwner->GetPawnViewLocation() + (MyOwner->GetControlRotation().Vector() * 30.0f)};
 	FVector TraceEnd{TraceStart + (MyOwner->GetControlRotation().Vector() * 1000.0f)};
 
 	FCollisionObjectQueryParams ObjectQueryParams{};

@@ -1,23 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SCharacter.h"
-#include "DrawDebugHelpers.h"
+#include "Actions/SActionComponent.h"
 #include "SInteractionComponent.h"
 #include "SAttributeComponent.h"
-#include "SBlackholeProjectile.h"
-#include "SMagicProjectile.h"
-#include "SDashProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 
-// Sets default values
+
 ASCharacter::ASCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
 	SpringArmComp->bUsePawnControlRotation = true;
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -31,6 +24,8 @@ ASCharacter::ASCharacter()
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>(TEXT("InteractionComp"));
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
+
+	ActionComp = CreateDefaultSubobject<USActionComponent>(TEXT("ActionComp"));
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -40,21 +35,13 @@ void ASCharacter::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
-// Called when the game starts or when spawned
+
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
-void ASCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-}
-
-// Called to bind functionality to input
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -71,6 +58,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Blackhole", IE_Pressed, this, &ASCharacter::SpawnBlackhole);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASCharacter::PerformDash);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -93,6 +83,16 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
+void ASCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ASCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
 void ASCharacter::PrimaryInteract()
 {
 	InteractionComp->PrimaryInteract();
@@ -100,74 +100,17 @@ void ASCharacter::PrimaryInteract()
 
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.2f);
-}
-
-void ASCharacter::PrimaryAttack_TimeElapsed()
-{
-	SpawnProjectile(MagicProjectileClass);
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void ASCharacter::SpawnBlackhole()
 {
-	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(TimerHandle_Blackhole, this, &ASCharacter::SpawnBlackhole_TimeElapsed, 0.2f);
-}
-
-void ASCharacter::SpawnBlackhole_TimeElapsed()
-{
-	SpawnProjectile(BlackholeProjectileClass);
+	ActionComp->StartActionByName(this, "Blackhole");
 }
 
 void ASCharacter::PerformDash()
 {
-	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(TimerHandle_Dash, this, &ASCharacter::PerformDash_TimeElapsed, 0.2f);
-}
-
-void ASCharacter::PerformDash_TimeElapsed()
-{
-	SpawnProjectile(DashProjectileClass);
-}
-
-void ASCharacter::SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn)
-{
-	if(ensureAlways(ClassToSpawn))
-	{
-		FCollisionShape CollisionShape{};
-		CollisionShape.SetSphere(20.0f);
-
-		FCollisionQueryParams CollisionQueryParams{};
-		CollisionQueryParams.AddIgnoredActor(this);
-
-		FCollisionObjectQueryParams ObjectQueryParams{};
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-
-		FVector TraceStart{(CameraComp->GetComponentLocation()) + ((GetControlRotation().Vector() * 30))};
-		FVector TraceEnd{TraceStart + (GetControlRotation().Vector() * 5000)};
-		
-		FHitResult HitResult{};
-		bool bDidTraceHit{GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape, CollisionQueryParams)};
-		if(bDidTraceHit)
-		{
-			TraceEnd = HitResult.ImpactPoint;
-		}
-		// FColor DebugLineColor{bDidTraceHit ? FColor::Green : FColor::Red};
-		// DrawDebugLine(GetWorld(), TraceStart, TraceEnd, DebugLineColor, false, 2.0f, 0.0f, 2.0f);
-		
-		FVector HandLocation{GetMesh()->GetSocketLocation(HandSocketName)};
-		FRotator ProjectileRotation{UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd)};
-		FTransform SpawnTM{ProjectileRotation, HandLocation};
-		
-		FActorSpawnParameters SpawnParameters{};
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParameters.Instigator = this;
-
-		GetWorld()->SpawnActor<ASProjectileBase>(ClassToSpawn, SpawnTM, SpawnParameters);
-	}
+	ActionComp->StartActionByName(this, "Dash");
 }
 
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
@@ -192,12 +135,12 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	}
 }
 
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	return CameraComp->GetComponentLocation();
+}
+
 void ASCharacter::HealSelf(float Amount /* = 100 */)
 {
 	AttributeComp->ApplyHealthChange(this, Amount);
-}
-
-FVector ASCharacter::GetCameraLocation() const
-{
-	return CameraComp->GetComponentLocation();
 }

@@ -2,7 +2,6 @@
 
 
 #include "SGameplayFunctionLibrary.h"
-
 #include "SAttributeComponent.h"
 
 bool USGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)
@@ -19,12 +18,13 @@ bool USGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AAc
 {
 	if(ApplyDamage(DamageCauser, TargetActor, DamageAmount))
 	{
-		// we want to get the mesh of AICharacter and apply impulse to the specific impact point
-		
 		UPrimitiveComponent* HitComp = HitResult.GetComponent();
 		if(HitComp && HitComp->IsSimulatingPhysics(HitResult.BoneName))
 		{
-			HitComp->AddImpulseAtLocation(-HitResult.ImpactNormal * 150'000.0f, HitResult.ImpactPoint, HitResult.BoneName);
+			FVector HitDirection = HitResult.TraceEnd - HitResult.TraceStart;
+			HitDirection.Normalize();
+			
+			HitComp->AddImpulseAtLocation(HitDirection * 150'000.0f, HitResult.ImpactPoint, HitResult.BoneName);
 			return true;
 		}
 	}
