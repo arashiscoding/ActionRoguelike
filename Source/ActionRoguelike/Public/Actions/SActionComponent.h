@@ -1,13 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "SActionComponent.generated.h"
 
 class USAction;
 
+/**
+ * The main goal of ActionComponent is to keep a list of Actions,
+ * and that we can add, start and stop Actions by name.
+ */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API USActionComponent : public UActorComponent
 {
@@ -21,16 +25,21 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<USAction>> DefaultActions{};
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
+	FGameplayTagContainer ActiveGameplayTags{};
+
 protected:
 	UPROPERTY()
 	TArray<USAction*> Actions{};
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Action")
-	void AddAction(TSubclassOf<USAction>& ActionClass);
+	void AddAction(const TSubclassOf<USAction>& ActionClass);
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool StartActionByName(AActor* Instigator, FName ActionName);

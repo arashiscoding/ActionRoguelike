@@ -2,7 +2,9 @@
 
 #include "SMagicProjectile.h"
 #include "SGameplayFunctionLibrary.h"
+#include "Actions/SActionComponent.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -28,11 +30,22 @@ void ASMagicProjectile::OnActorBeginOverlap(UPrimitiveComponent* OverlappedCompo
 {
 	if(OtherActor && OtherActor != GetInstigator())
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, OtherActor->GetActorLocation(), FRotator::ZeroRotator);
+		USActionComponent* ActionComp = OtherActor->FindComponentByClass<USActionComponent>();
+		if(ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+		{
+			/* in SProjectileBase, we set bRotationFollowsVelocity property of MovementComp to true,
+			 *  so by inverting the Velocity, we will turn it around basically */
+			MovementComp->Velocity = -MovementComp->Velocity;
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
 		
-		USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult);
-		
-		Destroy();
+		if(USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, OtherActor->GetActorLocation(), FRotator::ZeroRotator);
+			
+			Destroy();
+		}
 	}
 }
 

@@ -18,7 +18,7 @@ protected:
 	USizeBox* ParentSizeBox{};
 
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "UI")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	FVector WorldOffset{};
 	
 	UPROPERTY(BlueprintReadOnly, Category = "UI")

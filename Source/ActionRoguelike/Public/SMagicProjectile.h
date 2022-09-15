@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "SProjectileBase.h"
 #include "SMagicProjectile.generated.h"
 
@@ -20,10 +21,14 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	UAudioComponent* AudioComp{};
-	
+
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	float DamageAmount{20.0f};
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
+	FGameplayTag ParryTag{};
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
 	USoundCue* ImpactSound{};
 

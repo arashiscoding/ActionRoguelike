@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "SPowerupActor.h"
-#include "SHealthPotion.generated.h"
+#include "SPowerup_HealthPotion.generated.h"
 
 UCLASS()
-class ACTIONROGUELIKE_API ASHealthPotion : public ASPowerupActor
+class ACTIONROGUELIKE_API ASPowerup_HealthPotion : public ASPowerupActor
 {
 	GENERATED_BODY()
 
 public:
-	ASHealthPotion();
+	ASPowerup_HealthPotion();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect")

@@ -27,6 +27,7 @@ bool USGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AAc
 			HitComp->AddImpulseAtLocation(HitDirection * 150'000.0f, HitResult.ImpactPoint, HitResult.BoneName);
 			return true;
 		}
+		return true;
 	}
 	return false;
 }
