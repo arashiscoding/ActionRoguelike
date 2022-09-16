@@ -4,21 +4,87 @@
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
+#include "SPlayerState.h"
 #include "AI/SAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "Powerup/SPowerupActor.h"
 
 // marking it as a cheat, won't include it in final build
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ara.SpawnBots"), true, TEXT("Enable spawning of bots."), ECVF_Cheat);
 
 ASGameModeBase::ASGameModeBase()
 {
-	
+	PlayerStateClass = ASPlayerState::StaticClass();
 }
 
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBot, this, &ASGameModeBase::SpawnBot, SpawnBotTimerInterval, true);
+
+	if(PowerupClasses.Num() > 0)
+	{
+		UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnPowerupQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
+		if(ensureMsgf(QueryInstance, TEXT("Add SpawnPowerup to SGameModeBase")))
+		{
+			QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnSpawnPowerupQueryFinished);
+		}
+	}
+}
+
+void ASGameModeBase::OnSpawnPowerupQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+{
+	if(QueryStatus != EEnvQueryStatus::Success)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("SGameMode | Spawn Powerup EQS query failed!")));
+		return;
+	}
+
+	TArray<FVector> Locations{};
+	QueryInstance->GetQueryResultsAsLocations(Locations);
+
+	// Keep used locations to easily check distance between points
+	TArray<FVector> UsedLocations{};
+	
+	int32 SpawnCounter{};
+	
+	while (SpawnCounter < DesiredPowerupCount && Locations.Num() > 0)
+	{
+		int32 RandomLocationIndex = FMath::RandRange(0, Locations.Num()-1);
+
+		FVector PickedLocation = Locations[RandomLocationIndex];
+
+		Locations.RemoveAt(RandomLocationIndex);
+
+		if(UsedLocations.Contains(PickedLocation))
+		{
+			continue;
+		}
+
+		bool bDidFailOnDistance{false};
+		
+		for(FVector UsedLocation : UsedLocations)
+		{
+			float Distance = (UsedLocation - PickedLocation).Size();
+			if(Distance < RequiredPowerupDistance)
+			{
+				bDidFailOnDistance = true;
+				break;
+			}
+		}
+
+		if(bDidFailOnDistance)
+		{
+			continue;
+		}
+
+		int32 RandomPowerupClassIndex = FMath::RandRange(0, PowerupClasses.Num()-1);
+		
+		GetWorld()->SpawnActor<ASPowerupActor>(PowerupClasses[RandomPowerupClassIndex], PickedLocation, FRotator::ZeroRotator);
+
+		SpawnCounter++;
+		UsedLocations.Emplace(PickedLocation);
+	}
 }
 
 void ASGameModeBase::SpawnBot()
@@ -92,6 +158,9 @@ void ASGameModeBase::KillAllBots()
 
 void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 {
+	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+
+	// Respawn Players after delay
 	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
 	if(Player)
 	{
@@ -104,7 +173,17 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnPlayer, Delegate, PlayerRespawnDelay, false);
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+	
+	// Give Credits for kill
+	ASCharacter* KillerPlayer = Cast<ASCharacter>(KillerActor);
+	if(KillerPlayer)
+	{
+		ASPlayerState* SPlayerState = KillerPlayer->GetPlayerState<ASPlayerState>();
+		if(ensure(SPlayerState))
+		{
+			SPlayerState->AddCredits(CreditsPerKill);
+		}
+	}
 }
 
 void ASGameModeBase::RespawnPlayerDelayed(AController* Controller)

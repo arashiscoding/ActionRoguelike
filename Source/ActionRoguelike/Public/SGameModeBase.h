@@ -10,6 +10,7 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class ASAICharacter;
+class ASPowerupActor;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
@@ -32,14 +33,35 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* CurveFloat_SpawnBotDifficulty{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	float MaxBotCount = 10.0f;
+
+	/* Read/write access as we could change this as our difficulty increases*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+	int32 CreditsPerKill{50};
+
+	
+	UPROPERTY(EditAnywhere, Category = "Powerups")
+	UEnvQuery* SpawnPowerupQuery{};
+
+	UPROPERTY(EditAnywhere, Category = "Powerups")
+	TArray<TSubclassOf<ASPowerupActor>> PowerupClasses{};
+
+	UPROPERTY(EditAnywhere, Category = "Powerups")
+	int32 DesiredPowerupCount{10};
+	
+	UPROPERTY(EditAnywhere, Category = "Powerups")
+	float RequiredPowerupDistance{2000.0f};
+	
 	
 protected:
 	FTimerHandle TimerHandle_SpawnBot;
 
 protected:
 	virtual void StartPlay() override;
+
+	UFUNCTION()
+	void OnSpawnPowerupQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	
 	void SpawnBot();
 

@@ -7,6 +7,7 @@
 #include "SAction_ProjectileAttack.generated.h"
 
 class ASProjectileBase;
+class UParticleSystem;
 
 UCLASS()
 class ACTIONROGUELIKE_API USAction_ProjectileAttack : public USAction
@@ -25,6 +26,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	float AttackAnimDelay{0.2f};
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UParticleSystem* CastingEffect{};
 
 public:
 	virtual void StartAction_Implementation(AActor* Instigator) override;

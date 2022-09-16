@@ -4,6 +4,7 @@
 #include "Actions/SAction_ProjectileAttack.h"
 #include "SProjectileBase.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void USAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
@@ -14,6 +15,8 @@ void USAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 	if(Character)
 	{
 		Character->PlayAnimMontage(AttackAnim);
+
+		UGameplayStatics::SpawnEmitterAttached(CastingEffect, Character->GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 
 		FTimerDelegate TimerDelegate{};
 		TimerDelegate.BindUFunction(this, "AttackDelay_Elapsed", Character);

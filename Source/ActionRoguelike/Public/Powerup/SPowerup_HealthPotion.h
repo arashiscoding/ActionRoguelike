@@ -21,6 +21,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect", meta = (EditCondition = "!ShouldFullyHeal"))
 	float HealingAmount{20.0f};
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Credit")
+	int32 PowerupPrice{100};
+
 protected:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 };

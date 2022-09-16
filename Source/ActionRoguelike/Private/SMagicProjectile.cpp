@@ -44,7 +44,7 @@ void ASMagicProjectile::OnActorBeginOverlap(UPrimitiveComponent* OverlappedCompo
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, OtherActor->GetActorLocation(), FRotator::ZeroRotator);
 			
-			Destroy();
+			Explode();
 		}
 	}
 }
