@@ -17,7 +17,7 @@ void USActionComponent::BeginPlay()
 
 	for(TSubclassOf<USAction>& ActionClass : DefaultActions)
 	{
-		AddAction(ActionClass);
+		AddAction(GetOwner(), ActionClass);
 	}
 }
 
@@ -26,10 +26,10 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, DebugMsg);
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 }
 
-void USActionComponent::AddAction(const TSubclassOf<USAction>& ActionClass)
+void USActionComponent::AddAction(AActor* Instigator, const TSubclassOf<USAction>& ActionClass)
 {
 	if(!ensure(ActionClass))
 	{
@@ -40,6 +40,18 @@ void USActionComponent::AddAction(const TSubclassOf<USAction>& ActionClass)
 	if(ensure(NewAction))
 	{
 		Actions.Add(NewAction);
+		if(NewAction->bAutoStart && NewAction->CanStart(Instigator))
+		{
+			StartActionByName(Instigator, NewAction->ActionName);
+		}
+	}
+}
+
+void USActionComponent::RemoveAction(USAction* ActionToRemove)
+{
+	if(ensure(ActionToRemove && !ActionToRemove->IsRunning()))
+	{
+		Actions.Remove(ActionToRemove);
 	}
 }
 

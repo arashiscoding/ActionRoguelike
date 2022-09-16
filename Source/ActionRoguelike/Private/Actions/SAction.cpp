@@ -15,6 +15,7 @@ bool USAction::CanStart_Implementation(AActor* Instigator)
 	
 	if(Comp->ActiveGameplayTags.HasAny(BlockedTags))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Action blocked from starting: %s"), *GetNameSafe(this));
 		return false;
 	}
 	return true;

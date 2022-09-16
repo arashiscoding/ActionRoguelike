@@ -8,6 +8,7 @@
 
 class UPawnSensingComponent;
 class USAttributeComponent;
+class USActionComponent;
 class USWorldUserWidget;
 
 UCLASS()
@@ -24,6 +25,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USAttributeComponent* AttributeComp{};
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USActionComponent* ActionComp{};
 
 protected:
 	//Parameter's name in character's material

@@ -19,6 +19,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName{};
 
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	bool bAutoStart{};
+
 protected:
 	/* Tags added to OwningActor when activated, removed when action stops */
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
