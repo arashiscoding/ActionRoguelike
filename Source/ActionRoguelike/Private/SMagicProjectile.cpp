@@ -2,12 +2,12 @@
 
 #include "SMagicProjectile.h"
 #include "SGameplayFunctionLibrary.h"
-#include "Actions/SActionComponent.h"
 #include "Components/AudioComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
-#include "Actions/SActionEffect.h"
+#include "ActionSystem/SActionEffect.h"
+#include "ActionSystem/SActionComponent.h"
 
 
 ASMagicProjectile::ASMagicProjectile()

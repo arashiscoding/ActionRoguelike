@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actions/SAction.h"
-#include "Actions/SActionComponent.h"
+#include "ActionSystem/SAction.h"
+#include "ActionSystem/SActionComponent.h"
 
 bool USAction::CanStart_Implementation(AActor* Instigator)
 {
@@ -21,11 +21,6 @@ bool USAction::CanStart_Implementation(AActor* Instigator)
 	return true;
 }
 
-/**
- * We don't implement the "CanStart" checks inside of "StartAction" and "StopActon" because our blueprints
- * can extend these and complelety override the logic and we don't want to remember which conditions
- * we should check against. So instead of here, we check the conditions in SActionComponent.
- */
 void USAction::StartAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp, Log, TEXT("Action started: %s"), *GetNameSafe(this));

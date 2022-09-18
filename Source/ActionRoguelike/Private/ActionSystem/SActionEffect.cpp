@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "Actions/SActionEffect.h"
-#include "Actions/SActionComponent.h"
+#include "ActionSystem/SActionEffect.h"
+#include "ActionSystem/SActionComponent.h"
 
 USActionEffect::USActionEffect()
 {
@@ -48,11 +47,9 @@ void USActionEffect::StopAction_Implementation(AActor* Instigator)
 	{
 		Comp->RemoveAction(this);
 	}
-	
-	GEngine->AddOnScreenDebugMessage(-1, 6.0f, FColor::Green, TEXT("Buff Stopped & Removed"));
 }
 
 void USActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 6.0f, FColor::Red, TEXT("Buff"));
+	// logic in derived classes
 }

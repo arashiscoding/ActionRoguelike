@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actions/SAction.h"
+#include "ActionSystem/SAction.h"
 #include "SAction_ProjectileAttack.generated.h"
 
 class ASProjectileBase;

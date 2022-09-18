@@ -41,7 +41,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Action")
 	void StopAction(AActor* Instigator);
 	
-	/* if we don't override this, we don't have access to it's functions in Blueprint*/
+	/* if we don't override this, we don't have access to its functions in Blueprint*/
 	virtual UWorld* GetWorld() const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SCharacter.h"
-#include "Actions/SActionComponent.h"
+#include "ActionSystem/SActionComponent.h"
 #include "SInteractionComponent.h"
 #include "SAttributeComponent.h"
 #include "Camera/CameraComponent.h"

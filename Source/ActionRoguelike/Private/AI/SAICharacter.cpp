@@ -5,7 +5,7 @@
 #include "BrainComponent.h"
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
-#include "Actions/SActionComponent.h"
+#include "ActionSystem/SActionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"

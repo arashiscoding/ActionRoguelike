@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actions/SAction_Sprint.h"
+#include "ActionSystem/SAction_Sprint.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 

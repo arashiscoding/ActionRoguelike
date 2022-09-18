@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actions/SActionComponent.h"
-#include "Actions/SAction.h"
+#include "ActionSystem/SActionComponent.h"
+#include "ActionSystem/SAction.h"
 
 
 USActionComponent::USActionComponent()

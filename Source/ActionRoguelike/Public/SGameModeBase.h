@@ -30,13 +30,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<ASAICharacter> MinionClass{};
 
+	/* Increases MaxBotCount as the time passes according to its curve */
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* CurveFloat_SpawnBotDifficulty{};
 
+	/* If 'CurveFloat_SpawnBotDifficulty' is not assigned, this value will be used */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI")
 	float MaxBotCount = 10.0f;
 
-	/* Read/write access as we could change this as our difficulty increases*/
+	/* Read/write access as we could change this as our difficulty increases */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
 	int32 CreditsPerKill{50};
 
