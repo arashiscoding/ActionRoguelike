@@ -30,12 +30,15 @@ protected:
 	USActionComponent* ActionComp{};
 
 protected:
-	//Parameter's name in character's material
+	/* Parameter's name in character's material */
 	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
 	FName HitReceivedTimeName{"HitReceivedTime"};
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "AI", meta = (ClampMin = "2.0", UIMin = "2.0"))
+	float TimeToForgetPlayer{5.0f};
 
 protected:
 	virtual void PostInitializeComponents() override;
@@ -48,6 +51,11 @@ protected:
 
 	void SetTargetActor(AActor* TargetActor);
 
+	UFUNCTION()
+	void ForgetPlayer();
+
 	UPROPERTY()
 	USWorldUserWidget* HealthBarWidget{};
+
+	FTimerHandle TimerHandle_ForgetPlayer{};
 };

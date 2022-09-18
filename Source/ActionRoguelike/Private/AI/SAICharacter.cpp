@@ -41,6 +41,9 @@ void ASAICharacter::OnSeePawn(APawn* Pawn)
 {
 	SetTargetActor(Pawn);
 	DrawDebugString(GetWorld(), GetActorLocation(), TEXT("Player Spotted!"), nullptr, FColor::Red, 4.0f, true);
+
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_ForgetPlayer);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ForgetPlayer, this, &ASAICharacter::ForgetPlayer, TimeToForgetPlayer, false);
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
@@ -101,4 +104,10 @@ void ASAICharacter::SetTargetActor(AActor* TargetActor)
 	{
 		MyAIController->GetBlackboardComponent()->SetValueAsObject("TargetActor", TargetActor);
 	}
+}
+
+void ASAICharacter::ForgetPlayer()
+{
+	SetTargetActor(nullptr);
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_ForgetPlayer);
 }
