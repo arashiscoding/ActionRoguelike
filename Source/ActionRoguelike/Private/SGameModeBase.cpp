@@ -91,7 +91,7 @@ void ASGameModeBase::SpawnBot()
 {
 	if(!CVarSpawnBots.GetValueOnGameThread())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Bot spawning disabled via cvar 'CVarSpawnBots | ara.SpawnBots'"));
+		UE_LOG(LogTemp, Log, TEXT("SGameMode | Bot spawning disabled via cvar 'ara.SpawnBots'"));
 		return;
 	}
 	
@@ -158,7 +158,7 @@ void ASGameModeBase::KillAllBots()
 
 void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 {
-	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
+	UE_LOG(LogTemp, Log, TEXT("SGameMode | OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
 
 	// Respawn Players after delay
 	ASCharacter* Player = Cast<ASCharacter>(VictimActor);

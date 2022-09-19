@@ -9,6 +9,7 @@
 class UPawnSensingComponent;
 class USAttributeComponent;
 class USActionComponent;
+class USoundCue;
 class USWorldUserWidget;
 
 UCLASS()
@@ -31,11 +32,14 @@ protected:
 
 protected:
 	/* Parameter's name in character's material */
-	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Effect")
 	FName HitReceivedTimeName{"HitReceivedTime"};
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+	TSubclassOf<USWorldUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<USWorldUserWidget> SpottedWidgetClass{};
 	
 	UPROPERTY(EditDefaultsOnly, Category = "AI", meta = (ClampMin = "2.0", UIMin = "2.0"))
 	float TimeToForgetPlayer{5.0f};
@@ -48,14 +52,20 @@ protected:
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
-
+	
 	void SetTargetActor(AActor* TargetActor);
+	AActor* GetTargetActor() const;
 
 	UFUNCTION()
 	void ForgetPlayer();
 
+	void ShowSpottedWidget();
+
 	UPROPERTY()
 	USWorldUserWidget* HealthBarWidget{};
+
+	UPROPERTY()
+	USWorldUserWidget* SpottedWidget{};
 
 	FTimerHandle TimerHandle_ForgetPlayer{};
 };

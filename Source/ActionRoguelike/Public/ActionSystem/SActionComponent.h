@@ -17,7 +17,10 @@ class ACTIONROGUELIKE_API USActionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	static USActionComponent* GetActionComp(AActor* FromActor);
+	
 	USActionComponent();
 
 protected:
@@ -43,6 +46,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	void RemoveAction(USAction* ActionToRemove);
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	USAction* GetAction(TSubclassOf<USAction> ActionClass);
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool StartActionByName(AActor* Instigator, FName ActionName);

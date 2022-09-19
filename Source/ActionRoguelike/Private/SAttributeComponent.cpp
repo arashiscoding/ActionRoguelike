@@ -1,23 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SAttributeComponent.h"
-
 #include "SGameModeBase.h"
 
 USAttributeComponent::USAttributeComponent()
 {
-	
-}
+	HealthMax = 100.0f;
+	Health = HealthMax;
 
-void USAttributeComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	Health = MaxHealth;
+	Rage = 0.0f;
+	RageMax = 100.0f;
+
+	RagePercentPerDamage = 100;
+
+	bIsDeathConfirmed = false;
 }
 
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	// "God" console command will change "CanBeDamaged" property for player pawn
+	// "God" console command changes "CanBeDamaged" property of player pawn
 	if(!GetOwner()->CanBeDamaged() && Delta < 0.0f)
 	{
 		return false;
@@ -25,15 +26,17 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 
 	float OldHealth = Health;
 	
-	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
+	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
-	// if ActualDelta would be 0, it would mean health didn't change. Either at full health, or has died.
+	// if ActualDelta would be 0, it means health didn't change. Either at full health, or has died.
 	float ActualDelta = Health - OldHealth;
 	
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
-	if(Health <= 0)
+	if(Health <= 0 && !bIsDeathConfirmed)
 	{
+		bIsDeathConfirmed = true;
+		
 		ASGameModeBase* SGameMode = GetWorld()->GetAuthGameMode<ASGameModeBase>();
 		if(SGameMode)
 		{
@@ -44,9 +47,30 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	return ActualDelta != 0.0f;
 }
 
+bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
+{
+	float OldRage = Rage;
+
+	Rage = FMath::Clamp(Rage + Delta, 0.0f, RageMax);
+
+	float ActualRage = Rage - OldRage;
+
+	if(ActualRage != 0.0f)
+	{
+		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualRage);
+	}
+
+	return ActualRage != 0.0f;
+}
+
 float USAttributeComponent::GetHealth() const
 {
 	return Health;
+}
+
+float USAttributeComponent::GetHealthMax() const
+{
+	return HealthMax;
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -56,17 +80,27 @@ bool USAttributeComponent::IsAlive() const
 
 bool USAttributeComponent::IsDamaged() const
 {
-	return Health < MaxHealth;
+	return Health < HealthMax;
 }
 
-float USAttributeComponent::GetMaxHealth() const
+float USAttributeComponent::GetRage() const
 {
-	return MaxHealth;
+	return Rage;
+}
+
+float USAttributeComponent::GetRageMax() const
+{
+	return RageMax;
+}
+
+float USAttributeComponent::GetRagePercentPerDamage() const
+{
+	return RagePercentPerDamage / 100.0f;
 }
 
 bool USAttributeComponent::Kill(AActor* InstigatorActor)
 {
-	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
+	return ApplyHealthChange(InstigatorActor, -GetHealthMax());
 }
 
 USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)
@@ -74,7 +108,6 @@ USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)
 	if(FromActor)
 	{
 		return FromActor->FindComponentByClass<USAttributeComponent>();
-		//return Cast<USAttributeComponent>(FromActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 	}
 	return nullptr;
 }

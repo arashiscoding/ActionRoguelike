@@ -21,7 +21,7 @@ void USBTService_CheckHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(AIPawn);
 		if(ensure(AttributeComp))
 		{
-			bool bIsLowOnHealth = (AttributeComp->GetHealth() / AttributeComp->GetMaxHealth()) < LowHealthThreshold;
+			bool bIsLowOnHealth = (AttributeComp->GetHealth() / AttributeComp->GetHealthMax()) < LowHealthThreshold;
 			
 			UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
 			BlackboardComp->SetValueAsBool(LowHealthKey.SelectedKeyName, bIsLowOnHealth);

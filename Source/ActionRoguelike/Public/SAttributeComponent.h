@@ -7,7 +7,7 @@
 
 class USAttributeComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, USAttributeComponent*, OwningComp, float, NewHealth, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAttributeChange, AActor*, InstigatorActor, USAttributeComponent*, OwningComp, float, NewValue, float, Delta);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API USAttributeComponent : public UActorComponent
@@ -25,32 +25,58 @@ public:
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float MaxHealth{100.0f};
-	
-	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	float Health{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float HealthMax{};
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float Rage{};
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float RageMax{};
+
+	/* What percent of the damage, should add to rage */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes", meta=(ClampMin = "0", UIMin = "0"))
+	int RagePercentPerDamage{};
 
 public:
-	virtual void BeginPlay() override;
+	UPROPERTY(BlueprintAssignable, Category = "Attributes")
+	FOnAttributeChange OnHealthChanged{};
+
+	UPROPERTY(BlueprintAssignable, Category = "Attributes")
+	FOnAttributeChange OnRageChanged{};
 	
-	UPROPERTY(BlueprintAssignable)
-	FOnHealthChanged OnHealthChanged{};
-	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool ApplyRageChange(AActor* InstigatorActor, float Delta);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealth() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetHealthMax() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool IsAlive() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool IsDamaged() const;
 
-	UFUNCTION(BlueprintCallable)
-	float GetMaxHealth() const;
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetRage() const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetRageMax() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	float GetRagePercentPerDamage() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool Kill(AActor* InstigatorActor);
+
+private:
+	bool bIsDeathConfirmed{};
 };

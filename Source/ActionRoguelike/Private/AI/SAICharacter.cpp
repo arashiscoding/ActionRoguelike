@@ -39,6 +39,10 @@ void ASAICharacter::PostInitializeComponents()
 
 void ASAICharacter::OnSeePawn(APawn* Pawn)
 {
+	if(!GetTargetActor())
+	{
+		ShowSpottedWidget();
+	}
 	SetTargetActor(Pawn);
 	DrawDebugString(GetWorld(), GetActorLocation(), TEXT("Player Spotted!"), nullptr, FColor::Red, 4.0f, true);
 
@@ -56,6 +60,10 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 	// If bot hasn't seen the player yet and player shoots at it, it can get aware of the player
 	if(InstigatorActor != this)
 	{
+		if(!GetTargetActor())
+		{
+			ShowSpottedWidget();
+		}
 		SetTargetActor(InstigatorActor);
 	}
 
@@ -106,8 +114,33 @@ void ASAICharacter::SetTargetActor(AActor* TargetActor)
 	}
 }
 
+AActor* ASAICharacter::GetTargetActor() const
+{
+	AAIController* MyAIController = Cast<AAIController>(GetController());
+	if(MyAIController)
+	{
+		return Cast<AActor>(MyAIController->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
+	}
+	
+	return nullptr;
+}
+
+
 void ASAICharacter::ForgetPlayer()
 {
 	SetTargetActor(nullptr);
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_ForgetPlayer);
+}
+
+void ASAICharacter::ShowSpottedWidget()
+{
+	if(!SpottedWidget)
+	{
+		SpottedWidget = CreateWidget<USWorldUserWidget>(GetWorld(), SpottedWidgetClass);
+	}
+	if(SpottedWidget)
+	{
+		SpottedWidget->AttachedActor = this;
+		SpottedWidget->AddToViewport(10);
+	}
 }

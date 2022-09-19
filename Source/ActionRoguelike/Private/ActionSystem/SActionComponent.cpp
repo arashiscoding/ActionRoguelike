@@ -4,7 +4,6 @@
 #include "ActionSystem/SActionComponent.h"
 #include "ActionSystem/SAction.h"
 
-
 USActionComponent::USActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -55,6 +54,19 @@ void USActionComponent::RemoveAction(USAction* ActionToRemove)
 	}
 }
 
+USAction* USActionComponent::GetAction(TSubclassOf<USAction> ActionClass)
+{
+	for(USAction* Action : Actions)
+	{
+		if(Action->IsA(ActionClass))
+		{
+			return Action;
+		}
+	}
+	
+	return nullptr;
+}
+
 bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
 	for(USAction* Action : Actions)
@@ -93,4 +105,13 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	
 	UE_LOG(LogTemp, Warning, TEXT("Action [%s] wasn't found. Unable to stop!"), *ActionName.ToString());
 	return false;
+}
+
+USActionComponent* USActionComponent::GetActionComp(AActor* FromActor)
+{
+	if(FromActor)
+	{
+		return FromActor->FindComponentByClass<USActionComponent>();
+	}
+	return nullptr;
 }

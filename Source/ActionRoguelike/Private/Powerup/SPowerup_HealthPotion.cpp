@@ -25,7 +25,7 @@ void ASPowerup_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 		{
 			if(ShouldFullyHeal)
 			{
-				AttributeComponent->ApplyHealthChange(this, AttributeComponent->GetMaxHealth());
+				AttributeComponent->ApplyHealthChange(this, AttributeComponent->GetHealthMax());
 			}
 			else
 			{
