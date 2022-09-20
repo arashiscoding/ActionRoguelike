@@ -17,8 +17,12 @@ USInteractionComponent::USInteractionComponent()
 void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	FindBestInteractable();
+
+	APawn* MyPawn = GetOwner<APawn>();
+	if(MyPawn->IsLocallyControlled())
+	{
+		FindBestInteractable();
+	}
 }
 
 void USInteractionComponent::FindBestInteractable()
@@ -32,8 +36,8 @@ void USInteractionComponent::FindBestInteractable()
 
 	FHitResult HitResult{};
 
-	FVector TraceStart{MyOwner->GetPawnViewLocation() + (MyOwner->GetControlRotation().Vector() * 30.0f)};
-	FVector TraceEnd{TraceStart + (MyOwner->GetControlRotation().Vector() * TraceDistance)};
+	FVector TraceStart = MyOwner->GetPawnViewLocation() + (MyOwner->GetControlRotation().Vector() * 30.0f);
+	FVector TraceEnd = TraceStart + (MyOwner->GetControlRotation().Vector() * TraceDistance);
 
 	FCollisionObjectQueryParams ObjectQueryParams{};
 	ObjectQueryParams.AddObjectTypesToQuery(TraceCollisionChannel);
@@ -73,8 +77,7 @@ void USInteractionComponent::FindBestInteractable()
 		{
 			PopupWidget = CreateWidget<USWorldUserWidget>(GetWorld(), PopupWidgetClass);
 		}
-		
-		if(PopupWidget)
+		else
 		{
 			PopupWidget->AttachedActor = FocusedActor;
 			
@@ -95,12 +98,17 @@ void USInteractionComponent::FindBestInteractable()
 
 void USInteractionComponent::PrimaryInteract()
 {
-	if(!FocusedActor)
+	ServerInteract(FocusedActor);
+}
+
+void USInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
+{
+	if(!InFocus)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, TEXT("No FocusedActor to interact."));
 		return;
 	}
 	
 	APawn* MyPawn = Cast<APawn>(GetOwner());
-	ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn); //whenever we want to call an Interface, we use I
+	ISGameplayInterface::Execute_Interact(InFocus, MyPawn); //whenever we want to call an Interface, we use I
 }
