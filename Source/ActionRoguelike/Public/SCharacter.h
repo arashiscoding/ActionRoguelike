@@ -16,35 +16,35 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+public:
+	ASCharacter();
+
 protected:
-	//Parameter's name in character's material
+	/* Parameter's name in character's material */
 	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
 	FName HitReceivedTimeName{"HitReceivedTime"};
 
-	//Parameter's name in character's material
+	/* Parameter's name in character's material */
 	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
 	FName HitFlashSpeedName{"HitFlashSpeed"};
 
-	//Parameter's name in character's material
+	/* Parameter's name in character's material */
 	UPROPERTY(VisibleDefaultsOnly, Category = "Effect|Material")
 	FName HitFlashColorName{"HitFlashColor"};
 
-	// Material Vector Parameter value, represents RGB
+	/* Material Vector Parameter value, represents RGB */
 	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
 	FVector HitFlashDamageColorValue{1.0f, 0.04f, 0.0f};
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
 	float HitFlashDamageSpeed{4.0f};
 
-	// Material Vector Parameter value, represents RGB
+	/* Material Vector Parameter value, represents RGB */
 	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
 	FVector HitFlashHealColorValue{0.0f, 0.8f, 0.0f};
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
 	float HitFlashHealSpeed{2.5f};
-	
-public:
-	ASCharacter();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -86,10 +86,9 @@ public:
 	FVector GetPawnViewLocation() const override;
 	
 private:
-	/**
-	 * Functions marked with Exec can be used as console commands
-	 * Exec works only in few places: PlayerController, Playable Character, GameMode, CheatManager
-	 */
+
+	/* Functions marked with Exec can be used as console commands
+	 * Exec works only in few places: PlayerController, Playable Character, GameMode, CheatManager */ 
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.0f);
 };

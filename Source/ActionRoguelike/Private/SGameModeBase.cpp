@@ -9,7 +9,7 @@
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Powerup/SPowerupActor.h"
 
-// marking it as a cheat, won't include it in final build
+
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ara.SpawnBots"), true, TEXT("Enable spawning of bots."), ECVF_Cheat);
 
 ASGameModeBase::ASGameModeBase()
@@ -72,7 +72,7 @@ void ASGameModeBase::OnSpawnPowerupQueryFinished(UEnvQueryInstanceBlueprintWrapp
 				break;
 			}
 		}
-
+		
 		if(bDidFailOnDistance)
 		{
 			continue;
@@ -135,7 +135,9 @@ void ASGameModeBase::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* 
 		return;
 	}
 	
-	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
+	TArray<FVector> Locations{};
+	QueryInstance->GetQueryResultsAsLocations(Locations);
+	
 	if(Locations.IsValidIndex(0))
 	{
 		GetWorld()->SpawnActor<ASAICharacter>(MinionClass, Locations[0], FRotator::ZeroRotator);

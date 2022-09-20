@@ -8,8 +8,7 @@
 class USAttributeComponent;
 
 /**
- * This buff will return some fraction of damage dealt, to its causer
- */
+ * This buff will return some fraction of damage dealt, to its causer */
 UCLASS()
 class ACTIONROGUELIKE_API USActionEffect_Thorns : public USActionEffect
 {
@@ -19,9 +18,9 @@ public:
 	USActionEffect_Thorns();
 
 protected:
-	/* How much of the damage dealt, should be returned to its causer*/
+	// How much of the damage dealt, should be returned to its causer
 	UPROPERTY(EditDefaultsOnly, Category = "Thorns")
-	float ReflectFraction{};
+	float ReflectFraction{0.2f};
 
 protected:
 	virtual void StartAction_Implementation(AActor* Instigator) override;

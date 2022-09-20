@@ -2,8 +2,6 @@
 
 
 #include "SDashProjectile.h"
-
-#include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -21,13 +19,11 @@ void ASDashProjectile::BeginPlay()
 
 void ASDashProjectile::Explode_Implementation()
 {
-	//Super::Explode_Implementation();
+	// Super::Explode_Implementation();
 	
-	/*
-	 * in ProjectileBaseClass, we call Explode in OnActorHit and here, in BeginPLay, we set a timer to trigger Explode
+	/* in ProjectileBaseClass, we call Explode in OnActorHit and here, in BeginPLay, we set a timer to trigger Explode
 	 * if we hit sth that's before the timer goes off, like floor, both OnActorHit and the timer will call Explode
-	 * in order to prevent that, we clear the timer
-	 */
+	 * in order to prevent that, we clear the timer */
 	GetWorldTimerManager().ClearTimer(TimerHandle_Detonate);
 
 	UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());

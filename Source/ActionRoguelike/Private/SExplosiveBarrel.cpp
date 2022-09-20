@@ -3,7 +3,7 @@
 #include "SExplosiveBarrel.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
-// Sets default values
+
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
@@ -24,7 +24,6 @@ void ASExplosiveBarrel::PostInitializeComponents()
 	MeshComp->OnComponentHit.AddDynamic(this, &ASExplosiveBarrel::OnHitComponent);
 }
 
-// Called when the game starts or when spawned
 void ASExplosiveBarrel::BeginPlay()
 {
 	Super::BeginPlay();

@@ -10,8 +10,6 @@ USActionEffect_Thorns::USActionEffect_Thorns()
 	// We don't want its periodic effect and want it to always be active
 	Duration = 0.0f;
 	Period = 0.0f;
-
-	ReflectFraction = 0.2f;
 }
 
 void USActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)

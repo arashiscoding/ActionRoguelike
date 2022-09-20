@@ -5,20 +5,12 @@
 
 USAttributeComponent::USAttributeComponent()
 {
-	HealthMax = 100.0f;
 	Health = HealthMax;
-
-	Rage = 0.0f;
-	RageMax = 100.0f;
-
-	RagePercentPerDamage = 100;
-
-	bIsDeathConfirmed = false;
 }
 
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	// "God" console command changes "CanBeDamaged" property of player pawn
+	/* "God" console command changes "CanBeDamaged" property of player pawn */
 	if(!GetOwner()->CanBeDamaged() && Delta < 0.0f)
 	{
 		return false;
@@ -27,8 +19,7 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	float OldHealth = Health;
 	
 	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
-
-	// if ActualDelta would be 0, it means health didn't change. Either at full health, or has died.
+	
 	float ActualDelta = Health - OldHealth;
 	
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
@@ -37,13 +28,15 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	{
 		bIsDeathConfirmed = true;
 		
-		ASGameModeBase* SGameMode = GetWorld()->GetAuthGameMode<ASGameModeBase>();
-		if(SGameMode)
+		ASGameModeBase* SGameModeBase = GetWorld()->GetAuthGameMode<ASGameModeBase>();
+		if(SGameModeBase)
 		{
-			SGameMode->OnActorKilled(GetOwner(), InstigatorActor);
+			SGameModeBase->OnActorKilled(GetOwner(), InstigatorActor);
 		}
 	}
 
+	/* if ActualDelta would be 0, it means health didn't change.
+	 * Either at full health, or has died. */
 	return ActualDelta != 0.0f;
 }
 
@@ -53,14 +46,14 @@ bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
 
 	Rage = FMath::Clamp(Rage + Delta, 0.0f, RageMax);
 
-	float ActualRage = Rage - OldRage;
+	float ActualDelta = Rage - OldRage;
 
-	if(ActualRage != 0.0f)
+	if(ActualDelta != 0.0f)
 	{
-		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualRage);
+		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
 	}
 
-	return ActualRage != 0.0f;
+	return ActualDelta != 0.0f;
 }
 
 float USAttributeComponent::GetHealth() const

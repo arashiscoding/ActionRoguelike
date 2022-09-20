@@ -15,30 +15,30 @@ class ACTIONROGUELIKE_API USAttributeComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	USAttributeComponent();
+
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	static USAttributeComponent* GetAttributeComp(AActor* FromActor);
 
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	static bool IsActorAlive(AActor* Actor);
-	
-	USAttributeComponent();
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Health{};
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float HealthMax{};
+	float HealthMax{100.0f};
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Rage{};
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	float RageMax{};
+	float RageMax{100.0f};
 
 	/* What percent of the damage, should add to rage */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes", meta=(ClampMin = "0", UIMin = "0"))
-	int RagePercentPerDamage{};
+	int RagePercentPerDamage{100};
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Attributes")
@@ -78,5 +78,5 @@ public:
 	bool Kill(AActor* InstigatorActor);
 
 private:
-	bool bIsDeathConfirmed{};
+	bool bIsDeathConfirmed{false};
 };

@@ -18,14 +18,14 @@ ASCharacter::ASCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(SpringArmComp);
 
+	InteractionComp = CreateDefaultSubobject<USInteractionComponent>(TEXT("InteractionComp"));
+	
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
+	
+	ActionComp = CreateDefaultSubobject<USActionComponent>(TEXT("ActionComp"));
+
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	InteractionComp = CreateDefaultSubobject<USInteractionComponent>(TEXT("InteractionComp"));
-
-	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
-
-	ActionComp = CreateDefaultSubobject<USActionComponent>(TEXT("ActionComp"));
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -77,7 +77,7 @@ void ASCharacter::MoveRight(float Value)
 	ControlRot.Roll = 0.0f;
 	ControlRot.Pitch = 0.0f;
 	
-	//UKismetMathLibrary::GetRightVector
+	/* UKismetMathLibrary::GetRightVector */
 	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 	
 	AddMovementInput(RightVector, Value);

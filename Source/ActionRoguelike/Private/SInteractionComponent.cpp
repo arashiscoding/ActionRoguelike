@@ -37,17 +37,16 @@ void USInteractionComponent::FindBestInteractable()
 
 	FCollisionObjectQueryParams ObjectQueryParams{};
 	ObjectQueryParams.AddObjectTypesToQuery(TraceCollisionChannel);
-
-
+	
 	FCollisionShape CollisionShape;
 	CollisionShape.SetSphere(TraceRadius);
 
 
-	bool DidItHit = GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape);
+	bool bDidItHit = GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape);
 
-	FColor DebugShapeColor = DidItHit ? FColor::Green : FColor::Red;
+	FColor DebugShapeColor = bDidItHit ? FColor::Green : FColor::Red;
 
-	bool bDrawDebug = CVarDrawDebugInteractions.GetValueOnGameThread();
+	bool bShouldDrawDebug = CVarDrawDebugInteractions.GetValueOnGameThread();
 
 	FocusedActor = nullptr;
 
@@ -56,14 +55,14 @@ void USInteractionComponent::FindBestInteractable()
 		if (HitActor->Implements<USGameplayInterface>()) //whenever we want to check or cast to an Interface, we use U
 		{
 			FocusedActor = HitActor;
-			if (bDrawDebug)
+			if (bShouldDrawDebug)
 			{
 				DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, TraceRadius, 16, DebugShapeColor, false, 2.0f);
 			}
 		}
 	}
 	
-	if (bDrawDebug)
+	if (bShouldDrawDebug)
 	{
 		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, DebugShapeColor, false, 2.0f, 0, 2);
 	}
