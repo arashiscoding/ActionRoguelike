@@ -12,6 +12,8 @@ ASPowerupActor::ASPowerupActor()
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	SetReplicates(true);
 }
 
 void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)

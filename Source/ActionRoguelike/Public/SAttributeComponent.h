@@ -24,10 +24,10 @@ public:
 	static bool IsActorAlive(AActor* Actor);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Health{};
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float HealthMax{100.0f};
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
@@ -39,6 +39,10 @@ protected:
 	/* What percent of the damage, should add to rage */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes", meta=(ClampMin = "0", UIMin = "0"))
 	int RagePercentPerDamage{100};
+	
+protected:
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastHealthChanged(AActor* InstigatorActor, float NewValue, float Delta);
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Attributes")
@@ -76,7 +80,4 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool Kill(AActor* InstigatorActor);
-
-private:
-	bool bIsDeathConfirmed{false};
 };

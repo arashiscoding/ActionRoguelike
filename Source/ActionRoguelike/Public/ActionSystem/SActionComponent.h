@@ -40,6 +40,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(Server, Reliable)
+	void ServerStartAction(AActor* Instigator, FName ActionName);
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	void AddAction(AActor* Instigator, const TSubclassOf<USAction>& ActionClass);

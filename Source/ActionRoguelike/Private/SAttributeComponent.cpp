@@ -2,10 +2,13 @@
 
 #include "SAttributeComponent.h"
 #include "SGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 USAttributeComponent::USAttributeComponent()
 {
 	Health = HealthMax;
+
+	SetIsReplicatedByDefault(true);
 }
 
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
@@ -22,11 +25,16 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	
 	float ActualDelta = Health - OldHealth;
 	
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-
-	if(Health <= 0 && !bIsDeathConfirmed)
+	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	if(ActualDelta != 0.0f)
 	{
-		bIsDeathConfirmed = true;
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+	}
+	
+	// Died
+	if(ActualDelta < 0.0f && !IsAlive())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Hit"));
 		
 		ASGameModeBase* SGameModeBase = GetWorld()->GetAuthGameMode<ASGameModeBase>();
 		if(SGameModeBase)
@@ -113,4 +121,17 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 		return AttributeComp->IsAlive();
 	}
 	return false;
+}
+
+void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewValue, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewValue, Delta);
+}
+
+void USAttributeComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USAttributeComponent, Health);
+	DOREPLIFETIME(USAttributeComponent, HealthMax);
 }

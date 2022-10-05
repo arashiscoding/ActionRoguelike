@@ -79,6 +79,12 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FailedMsg);
 				continue;
 			}
+
+			// Is client?
+			if(!GetOwner()->HasAuthority())
+			{
+				ServerStartAction(Instigator, ActionName);
+			}
 			
 			Action->StartAction(Instigator);
 			return true;
@@ -105,6 +111,11 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	
 	UE_LOG(LogTemp, Warning, TEXT("Action [%s] wasn't found. Unable to stop!"), *ActionName.ToString());
 	return false;
+}
+
+void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator, ActionName);
 }
 
 USActionComponent* USActionComponent::GetActionComp(AActor* FromActor)
