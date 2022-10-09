@@ -23,6 +23,9 @@ public:
 	bool bAutoStart{};
 
 protected:
+	UPROPERTY(Replicated)
+	USActionComponent* ActionComp;
+	
 	/* Tags added to OwningActor when activated, removed when action stops */
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer GrantsTags{};
@@ -32,6 +35,8 @@ protected:
 	FGameplayTagContainer BlockedTags{};
 
 public:
+	void Initialize(USActionComponent* NewActionComp);
+	
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	bool CanStart(AActor* Instigator);
 	
@@ -51,5 +56,15 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
 
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning");
 	bool bIsRunning{};
+
+	UFUNCTION()
+	void OnRep_IsRunning();
+
+	/* Extra step for networking classes that derive from UObject */
+	virtual bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
 };

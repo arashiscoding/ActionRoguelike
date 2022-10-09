@@ -33,12 +33,15 @@ public:
 	FGameplayTagContainer ActiveGameplayTags{};
 
 protected:
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<USAction*> Actions{};
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/* Extra step for networking classes that derive from UObject */
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 	UFUNCTION(Server, Reliable)
 	void ServerStartAction(AActor* Instigator, FName ActionName);

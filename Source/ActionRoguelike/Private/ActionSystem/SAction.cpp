@@ -3,6 +3,12 @@
 
 #include "ActionSystem/SAction.h"
 #include "ActionSystem/SActionComponent.h"
+#include "Net/UnrealNetwork.h"
+
+void USAction::Initialize(USActionComponent* NewActionComp)
+{
+	ActionComp = NewActionComp;
+}
 
 bool USAction::CanStart_Implementation(AActor* Instigator)
 {
@@ -35,8 +41,6 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp, Log, TEXT("Action stopped: %s"), *GetNameSafe(this));
 
-	ensureAlways(bIsRunning);
-
 	USActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
 
@@ -47,13 +51,14 @@ void USAction::StopAction_Implementation(AActor* Instigator)
  * GetWorld gets called a lot by the engine when we are editing components and at that point,
  * the engine didn't set Outer as we do in SActionComponent when we create an Action.
  * So Outer can be anything.
+ * In UE4 replication system, the engine will set the Outer to PlayerCharacter for cliens!
  */
 UWorld* USAction::GetWorld() const
 {
-	UActorComponent* OuterComp = Cast<UActorComponent>(GetOuter());
-	if(OuterComp)
+	AActor* Actor = Cast<AActor>(GetOuter());
+	if(Actor)
 	{
-		return OuterComp->GetWorld();
+		return Actor->GetWorld();
 	}
 	return nullptr;
 }
@@ -65,5 +70,25 @@ bool USAction::IsRunning() const
 
 USActionComponent* USAction::GetOwningComponent() const
 {
-	return Cast<USActionComponent>(GetOuter());
+	return ActionComp;
+}
+
+void USAction::OnRep_IsRunning()
+{
+	if(bIsRunning)
+	{
+		StartAction(nullptr);
+	}
+	else
+	{
+		StopAction(nullptr);
+	}
+}
+
+void USAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(USAction, bIsRunning);
+	DOREPLIFETIME(USAction, ActionComp);
 }
