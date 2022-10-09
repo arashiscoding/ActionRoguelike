@@ -20,26 +20,30 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	}
 
 	float OldHealth = Health;
-	
-	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
-	
-	float ActualDelta = Health - OldHealth;
-	
-	//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-	if(ActualDelta != 0.0f)
+	float NewHealth = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
+
+	float ActualDelta = NewHealth - OldHealth;
+
+	// Is Server?
+	if(GetOwner()->HasAuthority())
 	{
-		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
-	}
-	
-	// Died
-	if(ActualDelta < 0.0f && !IsAlive())
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Hit"));
-		
-		ASGameModeBase* SGameModeBase = GetWorld()->GetAuthGameMode<ASGameModeBase>();
-		if(SGameModeBase)
+		Health = NewHealth;
+
+		if(ActualDelta != 0.0f)
 		{
-			SGameModeBase->OnActorKilled(GetOwner(), InstigatorActor);
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+		}
+
+		// Died
+		if(ActualDelta < 0.0f && !IsAlive())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Hit"));
+		
+			ASGameModeBase* SGameModeBase = GetWorld()->GetAuthGameMode<ASGameModeBase>();
+			if(SGameModeBase)
+			{
+				SGameModeBase->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
 

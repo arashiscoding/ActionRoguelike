@@ -46,6 +46,9 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerStartAction(AActor* Instigator, FName ActionName);
 
+	UFUNCTION(Server, Reliable)
+	void ServerStopAction(AActor* Instigator, FName ActionName);
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	void AddAction(AActor* Instigator, const TSubclassOf<USAction>& ActionClass);
