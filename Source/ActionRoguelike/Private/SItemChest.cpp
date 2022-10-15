@@ -13,7 +13,7 @@ ASItemChest::ASItemChest()
 
 	/* Member variables of this actor that are marked with "Replicated",
 	 * will now be considered in Replication System */
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)

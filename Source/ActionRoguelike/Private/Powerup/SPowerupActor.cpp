@@ -14,7 +14,7 @@ ASPowerupActor::ASPowerupActor()
 	MeshComp->SetupAttachment(RootComponent);
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)

@@ -21,7 +21,7 @@ ASProjectileBase::ASProjectileBase()
 	MovementComp->ProjectileGravityScale = 0.0f;
 	MovementComp->InitialSpeed = 8000.0f;
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ASProjectileBase::PostInitializeComponents()

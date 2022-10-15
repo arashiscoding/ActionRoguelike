@@ -112,7 +112,7 @@ void ASGameModeBase::SpawnBot()
 {
 	if(!CVarSpawnBots.GetValueOnGameThread())
 	{
-		UE_LOG(LogTemp, Log, TEXT("SGameMode | Bot spawning disabled via cvar 'ara.SpawnBots'"));
+		//UE_LOG(LogTemp, Log, TEXT("SGameMode | Bot spawning disabled via cvar 'ara.SpawnBots'"));
 		return;
 	}
 	
@@ -128,7 +128,7 @@ void ASGameModeBase::SpawnBot()
 		}
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("SGameMode | Alive Bots: %d"), NumberOfAliveBots);
+	//UE_LOG(LogTemp, Log, TEXT("SGameMode | Alive Bots: %d"), NumberOfAliveBots);
 	
 	if(CurveFloat_SpawnBotDifficulty)
 	{
@@ -137,7 +137,7 @@ void ASGameModeBase::SpawnBot()
 	
 	if(NumberOfAliveBots >= MaxBotCount)
 	{
-		UE_LOG(LogTemp, Log, TEXT("SGameMode | At maximum bot capacity. Skipping bot spawn."));
+		//UE_LOG(LogTemp, Log, TEXT("SGameMode | At maximum bot capacity. Skipping bot spawn."));
 		return;
 	}
 	
@@ -236,21 +236,20 @@ void ASGameModeBase::WriteSaveGame()
 
 void ASGameModeBase::LoadSaveGame()
 {
-	if(UGameplayStatics::DoesSaveGameExist(SaveSlotName, 0))
-	{
-		SaveGameObject = Cast<USSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
-		if(!SaveGameObject)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to load SaveGame data!"));
-			return;
-		}
-
-		UE_LOG(LogTemp, Warning, TEXT("Loaded SaveGame data."));
-	}
-	else
+	if(!UGameplayStatics::DoesSaveGameExist(SaveSlotName, 0))
 	{
 		SaveGameObject = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
-
+	
 		UE_LOG(LogTemp, Warning, TEXT("Created new SaveGame data."));
+		return;
 	}
+	
+	SaveGameObject = Cast<USSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+	if(!SaveGameObject)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to load SaveGame data!"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Loaded SaveGame data."));
 }
