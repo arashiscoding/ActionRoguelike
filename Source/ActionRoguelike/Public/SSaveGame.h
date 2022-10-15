@@ -11,17 +11,14 @@ struct FActorSaveData
 	GENERATED_BODY()
 
 public:
-	FActorSaveData(const FString& InActorName = "None", const FTransform& InTransform = FTransform::Identity)
-		: ActorName(InActorName), Transform(InTransform)
-	{
-		
-	}
-	
 	UPROPERTY()
 	FString ActorName{};
 
 	UPROPERTY()
 	FTransform Transform{};
+
+	UPROPERTY()
+	TArray<uint8> ByteData{};
 };
 
 UCLASS()
