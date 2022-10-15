@@ -230,6 +230,20 @@ void ASGameModeBase::WriteSaveGame()
 			break; // single player only at this point
 		}
 	}
+
+	SaveGameObject->SavedActors.Empty();
+
+	for(TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if(!Actor->Implements<USGameplayInterface>())
+		{
+			continue;
+		}
+		
+		FActorSaveData ActorSaveData{Actor->GetName(), Actor->GetActorTransform()};
+		SaveGameObject->SavedActors.Emplace(ActorSaveData);
+	}
 	
 	UGameplayStatics::SaveGameToSlot(SaveGameObject, SaveSlotName, 0);
 }
@@ -252,4 +266,22 @@ void ASGameModeBase::LoadSaveGame()
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Loaded SaveGame data."));
+
+	for(TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if(!Actor->Implements<USGameplayInterface>())
+		{
+			continue;
+		}
+
+		for(FActorSaveData ActorSaveData : SaveGameObject->SavedActors)
+		{
+			if(ActorSaveData.ActorName == Actor->GetName())
+			{
+				Actor->SetActorTransform(ActorSaveData.Transform);
+				break;
+			}
+		}
+	}
 }

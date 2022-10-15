@@ -5,6 +5,24 @@
 #include "GameFramework/SaveGame.h"
 #include "SSaveGame.generated.h"
 
+USTRUCT()
+struct FActorSaveData
+{
+	GENERATED_BODY()
+
+public:
+	FActorSaveData(const FString& InActorName = "None", const FTransform& InTransform = FTransform::Identity)
+		: ActorName(InActorName), Transform(InTransform)
+	{
+		
+	}
+	
+	UPROPERTY()
+	FString ActorName{};
+
+	UPROPERTY()
+	FTransform Transform{};
+};
 
 UCLASS()
 class ACTIONROGUELIKE_API USSaveGame : public USaveGame
@@ -14,4 +32,7 @@ class ACTIONROGUELIKE_API USSaveGame : public USaveGame
 public:
 	UPROPERTY()
 	int32 Credits{};
+
+	UPROPERTY()
+	TArray<FActorSaveData> SavedActors{};
 };
