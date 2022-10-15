@@ -16,8 +16,12 @@ class ACTIONROGUELIKE_API ASPlayerState : public APlayerState
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Credits");
+	UPROPERTY(ReplicatedUsing = "OnRep_Credits", EditDefaultsOnly, Category = "Credits");
 	int32 Credits{};
+
+	// OnRep can use a parameter containing the 'old value' of the variable it is bound to.
+	UFUNCTION()
+	void OnRep_Credits(int32 OldCredits);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Credits")

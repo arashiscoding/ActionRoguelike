@@ -28,13 +28,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<USAction>> DefaultActions{};
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
-	FGameplayTagContainer ActiveGameplayTags{};
-
-protected:
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, VisibleInstanceOnly, Category = "Actions")
 	TArray<USAction*> Actions{};
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay Tags")
+	FGameplayTagContainer ActiveGameplayTags{};
 
 protected:
 	virtual void BeginPlay() override;

@@ -26,11 +26,17 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect")
 	float RespawnTime{10.0f};
+
+	UPROPERTY(ReplicatedUsing = "OnRep_IsActive")
+	bool bIsActive{true};
 	
 protected:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 	void DisablePowerup();
 	void EnablePowerup();
+
+	UFUNCTION()
+	void OnRep_IsActive();
 
 private:
 	FTimerHandle TimerHandle_RespawnTimer;

@@ -35,14 +35,14 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	// FString DebugMsg = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
 	// GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::White, DebugMsg);
 
-	for(USAction* Action : Actions)
-	{
-		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
-		
-		FString ActionMsg = FString::Printf(TEXT("[%s] | Action: %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action));
-		
-		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
-	}
+	// for(USAction* Action : Actions)
+	// {
+	// 	FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+	// 	
+	// 	FString ActionMsg = FString::Printf(TEXT("[%s] | Action: %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action));
+	// 	
+	// 	LogOnScreen(this, ActionMsg, TextColor, 0.0f);
+	// }
 }
 
 void USActionComponent::AddAction(AActor* Instigator, const TSubclassOf<USAction>& ActionClass)
@@ -66,9 +66,16 @@ void USActionComponent::AddAction(AActor* Instigator, const TSubclassOf<USAction
 		
 		Actions.Add(NewAction);
 		
-		if(NewAction->bAutoStart && NewAction->CanStart(Instigator))
+		if(NewAction->bAutoStart)
 		{
-			StartActionByName(Instigator, NewAction->ActionName);
+			if(NewAction->CanStart(Instigator))
+			{
+				StartActionByName(Instigator, NewAction->ActionName);
+			}
+			else
+			{
+				RemoveAction(NewAction);
+			}
 		}
 	}
 }
@@ -167,17 +174,17 @@ void USActionComponent::ServerStopAction_Implementation(AActor* Instigator, FNam
 
 bool USActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
 {
-	bool ChangedSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 	for(USAction* Action : Actions)
 	{
 		if(Action)
 		{
 			// "Channel->ReplicateSubobject" checks if the variable has changed
-			ChangedSomething |= Channel->ReplicateSubobject(Action, *Bunch, *RepFlags);
+			WroteSomething |= Channel->ReplicateSubobject(Action, *Bunch, *RepFlags);
 		}
 	}
 	
-	return ChangedSomething;
+	return WroteSomething;
 }
 
 void USActionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

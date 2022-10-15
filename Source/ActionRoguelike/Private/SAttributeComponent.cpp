@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SAttributeComponent.h"
+
+#include "SCharacter.h"
 #include "SGameModeBase.h"
 #include "Net/UnrealNetwork.h"
 
@@ -37,8 +39,6 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 		// Died
 		if(ActualDelta < 0.0f && !IsAlive())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, TEXT("Hit"));
-		
 			ASGameModeBase* SGameModeBase = GetWorld()->GetAuthGameMode<ASGameModeBase>();
 			if(SGameModeBase)
 			{
@@ -55,16 +55,21 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
 {
 	float OldRage = Rage;
+	float NewRage = FMath::Clamp(Rage + Delta, 0.0f, RageMax);
 
-	Rage = FMath::Clamp(Rage + Delta, 0.0f, RageMax);
+	float ActualDelta = NewRage - OldRage;
 
-	float ActualDelta = Rage - OldRage;
-
-	if(ActualDelta != 0.0f)
+	// Is Server?
+	if(GetOwner()->HasAuthority())
 	{
-		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+		Rage = NewRage;
+		
+		if(ActualDelta != 0.0f)
+		{
+			MulticastRageChanged(InstigatorActor, Rage, ActualDelta);
+		}
 	}
-
+ 
 	return ActualDelta != 0.0f;
 }
 
@@ -127,9 +132,14 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 	return false;
 }
 
-void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewValue, float Delta)
+void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {
-	OnHealthChanged.Broadcast(InstigatorActor, this, NewValue, Delta);
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+}
+
+void USAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
+{
+	OnRageChanged.Broadcast(InstigatorActor, this, NewRage, Delta);
 }
 
 void USAttributeComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -138,4 +148,6 @@ void USAttributeComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProp
 
 	DOREPLIFETIME(USAttributeComponent, Health);
 	DOREPLIFETIME(USAttributeComponent, HealthMax);
+	DOREPLIFETIME(USAttributeComponent, Rage);
+	DOREPLIFETIME(USAttributeComponent, RageMax);
 }

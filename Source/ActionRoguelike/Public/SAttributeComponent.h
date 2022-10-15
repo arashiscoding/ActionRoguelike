@@ -30,10 +30,10 @@ protected:
 	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float HealthMax{100.0f};
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Rage{};
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float RageMax{100.0f};
 
 	/* What percent of the damage, should add to rage */
@@ -42,7 +42,10 @@ protected:
 	
 protected:
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastHealthChanged(AActor* InstigatorActor, float NewValue, float Delta);
+	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRageChanged(AActor* InstigatorActor, float NewRage, float Delta);
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Attributes")

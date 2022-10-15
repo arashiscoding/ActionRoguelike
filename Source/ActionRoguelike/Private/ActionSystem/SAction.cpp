@@ -49,12 +49,7 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 	RepData.Instigator = Instigator;
 }
 
-/**
- * GetWorld gets called a lot by the engine when we are editing components and at that point,
- * the engine didn't set Outer as we do in SActionComponent when we create an Action.
- * So Outer can be anything.
- * In UE4 replication system, the engine will set the Outer to PlayerCharacter for cliens!
- */
+/* In UE4 replication system, the engine will set the Outer to PlayerCharacter for cliens! */
 UWorld* USAction::GetWorld() const
 {
 	AActor* Actor = Cast<AActor>(GetOuter());
