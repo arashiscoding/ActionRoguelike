@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "SGameModeBase.generated.h"
 
+class USSaveGame;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class ASAICharacter;
@@ -21,6 +22,13 @@ public:
 	ASGameModeBase();
 
 protected:
+	UPROPERTY()
+	USSaveGame* SaveGameObject{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SaveGame")
+	FString SaveSlotName{"SaveGame01"};
+
+	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SpawnBotTimerInterval{2.0f};
 
@@ -60,8 +68,12 @@ protected:
 	FTimerHandle TimerHandle_SpawnBot;
 
 protected:
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void StartPlay() override;
-
+	
+	/* Signals that a player is ready to enter the game, which may start it up */
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+	
 	UFUNCTION()
 	void OnSpawnPowerupQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 	
@@ -78,4 +90,9 @@ protected:
 
 public:
 	virtual void OnActorKilled(AActor* VictimActor, AActor* KillerActor);
+
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
 };
