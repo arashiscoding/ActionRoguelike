@@ -14,6 +14,12 @@ class ACTIONROGUELIKE_API ASPlayerController : public APlayerController
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> PauseMenuClass{};
+
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance{};
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnPawnChanged OnPawnChanged{};
 
@@ -22,14 +28,18 @@ protected:
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateChanged OnPlayerStateChanged{};
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BlueprintBeginPlayingState();
-
 protected:
 	/* Called when PlayerController is ready to begin playing, good moment to initialize things like UI which might be too early in BeginPlay
 	 * (esp. in multiplayer clients where not all data such as PlayerState may have been received yet). */
 	virtual void BeginPlayingState() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BlueprintBeginPlayingState();
 	
 	virtual void SetPawn(APawn* InPawn) override;
 	virtual void OnRep_PlayerState() override;
+	virtual void SetupInputComponent() override;
+
+	UFUNCTION(BlueprintCallable)
+	void TogglePauseMenu();
 };

@@ -45,13 +45,14 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
+	// Calling before Super:: so we set variables before "BeginPlayingState" is called in PlayerController (Which is where we instantiate UI)
 	ASPlayerState* PS = NewPlayer->GetPlayerState<ASPlayerState>();
 	if(PS)
 	{
 		PS->LoadPlayerState(SaveGameObject);
 	}
+
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
 void ASGameModeBase::OnSpawnPowerupQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
