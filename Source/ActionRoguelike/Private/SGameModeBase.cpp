@@ -259,8 +259,16 @@ void ASGameModeBase::WriteSaveGame()
 		
 		SaveGameObject->SavedActors.Emplace(ActorSaveData);
 	}
-	
-	UGameplayStatics::SaveGameToSlot(SaveGameObject, SaveSlotName, 0);
+
+	/* Synchronous Saving */
+	//UGameplayStatics::SaveGameToSlot(SaveGameObject, SaveSlotName, 0);
+
+	/* Asynchronous Saving */
+	FAsyncSaveGameToSlotDelegate SavedDelegate;
+	SavedDelegate.BindUObject(this, &ASGameModeBase::SaveGameDelegateFunction);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Starting to save"));
+	UGameplayStatics::AsyncSaveGameToSlot(SaveGameObject, SaveSlotName, 0, SavedDelegate);
 }
 
 void ASGameModeBase::LoadSaveGame()
@@ -312,5 +320,17 @@ void ASGameModeBase::LoadSaveGame()
 				break;
 			}
 		}
+	}
+}
+
+void ASGameModeBase::SaveGameDelegateFunction(const FString& SlotName, const int32 UserIndex, bool bSuccess)
+{
+	if(bSuccess)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Saved Successfully!"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Save Failed!"));
 	}
 }

@@ -95,4 +95,7 @@ public:
 	void WriteSaveGame();
 
 	void LoadSaveGame();
+
+private:
+	void SaveGameDelegateFunction(const FString& SlotName, const int32 UserIndex, bool bSuccess);
 };
