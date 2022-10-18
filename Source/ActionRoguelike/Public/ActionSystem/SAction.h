@@ -50,6 +50,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer BlockedTags{};
 
+	UPROPERTY(Replicated)
+	float TimeStarted{};
+
 public:
 	void Initialize(USActionComponent* NewActionComp);
 	

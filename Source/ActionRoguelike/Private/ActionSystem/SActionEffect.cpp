@@ -2,6 +2,7 @@
 
 #include "ActionSystem/SActionEffect.h"
 #include "ActionSystem/SActionComponent.h"
+#include "GameFramework/GameStateBase.h"
 
 USActionEffect::USActionEffect()
 {
@@ -11,8 +12,6 @@ USActionEffect::USActionEffect()
 void USActionEffect::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
-
-	TimeStarted = GetWorld()->TimeSeconds;
 
 	if(Duration > 0.0f)
 	{
@@ -53,8 +52,15 @@ void USActionEffect::StopAction_Implementation(AActor* Instigator)
 
 float USActionEffect::GetTimeRemaining() const
 {
-	float EndTime = TimeStarted + Duration;
-	return EndTime - GetWorld()->TimeSeconds;
+	AGameStateBase* GS = GetWorld()->GetGameState<AGameStateBase>();
+	if(GS)
+	{
+		float EndTime = TimeStarted + Duration;
+		return EndTime - GS->GetServerWorldTimeSeconds();
+	}
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("SActionEffect | GameState is Not VALID!")));
+	return Duration;
 }
 
 void USActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)
