@@ -7,6 +7,9 @@
 #include "SActionComponent.generated.h"
 
 class USAction;
+class USActionComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, USActionComponent*, OwningComp, USAction*, Action);
 
 /**
  * The main goal of ActionComponent is to keep a list of Actions,
@@ -28,12 +31,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<USAction>> DefaultActions{};
 
-	UPROPERTY(Replicated, VisibleInstanceOnly, Category = "Actions")
+	UPROPERTY(Replicated, VisibleInstanceOnly, BlueprintReadOnly, Category = "Actions")
 	TArray<USAction*> Actions{};
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay Tags")
 	FGameplayTagContainer ActiveGameplayTags{};
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStarted{};
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActionStateChanged OnActionStopped{};
 
 protected:
 	virtual void BeginPlay() override;

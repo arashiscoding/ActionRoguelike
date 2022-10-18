@@ -12,6 +12,8 @@ void USActionEffect::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
 
+	TimeStarted = GetWorld()->TimeSeconds;
+
 	if(Duration > 0.0f)
 	{
 		FTimerDelegate Delegate{};
@@ -47,6 +49,12 @@ void USActionEffect::StopAction_Implementation(AActor* Instigator)
 	{
 		Comp->RemoveAction(this);
 	}
+}
+
+float USActionEffect::GetTimeRemaining() const
+{
+	float EndTime = TimeStarted + Duration;
+	return EndTime - GetWorld()->TimeSeconds;
 }
 
 void USActionEffect::ExecutePeriodicEffect_Implementation(AActor* Instigator)

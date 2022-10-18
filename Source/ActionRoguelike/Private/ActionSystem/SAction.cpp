@@ -14,16 +14,17 @@ bool USAction::CanStart_Implementation(AActor* Instigator)
 {
 	if(IsRunning())
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Can't start [%s]. Action is already running."), *ActionName.ToString()));
 		return false;
 	}
 	
 	USActionComponent* Comp = GetOwningComponent();
-	
 	if(Comp->ActiveGameplayTags.HasAny(BlockedTags))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Action blocked from starting: %s"), *GetNameSafe(this));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Can't start [%s]. Action blocked from starting"), *ActionName.ToString()));
 		return false;
 	}
+	
 	return true;
 }
 
@@ -36,6 +37,8 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
+
+	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
 }
 
 void USAction::StopAction_Implementation(AActor* Instigator)
@@ -47,6 +50,8 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 
 	RepData.bIsRunning = false;
 	RepData.Instigator = Instigator;
+
+	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(), this);
 }
 
 /* In UE4 replication system, the engine will set the Outer to PlayerCharacter for cliens! */

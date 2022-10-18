@@ -70,7 +70,7 @@ void USActionComponent::AddAction(AActor* Instigator, const TSubclassOf<USAction
 		{
 			if(NewAction->CanStart(Instigator))
 			{
-				StartActionByName(Instigator, NewAction->ActionName);
+				NewAction->StartAction(Instigator);
 			}
 			else
 			{
@@ -109,8 +109,6 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 		{
 			if(!Action->CanStart(Instigator))
 			{
-				FString FailedMsg = FString::Printf(TEXT("Can't start action: %s"), *ActionName.ToString());
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FailedMsg);
 				continue;
 			}
 

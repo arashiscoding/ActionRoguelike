@@ -25,9 +25,14 @@ protected:
 	FTimerHandle TimerHandle_Duration{};
 	FTimerHandle TimerHandle_Period{};
 
+	float TimeStarted{};
+
 public:
 	virtual void StartAction_Implementation(AActor* Instigator) override;
 	virtual void StopAction_Implementation(AActor* Instigator) override;
+
+	UFUNCTION(BlueprintCallable)
+	float GetTimeRemaining() const;
 	
 protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Effect")

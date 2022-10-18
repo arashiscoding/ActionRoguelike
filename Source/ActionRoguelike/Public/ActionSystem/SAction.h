@@ -38,6 +38,9 @@ public:
 protected:
 	UPROPERTY(Replicated)
 	USActionComponent* ActionComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	UTexture2D* Icon{};
 	
 	/* Tags added to OwningActor when activated, removed when action stops */
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
