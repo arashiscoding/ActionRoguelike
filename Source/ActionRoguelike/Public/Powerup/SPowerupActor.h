@@ -32,6 +32,8 @@ protected:
 	
 protected:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+	
 	void DisablePowerup();
 	void EnablePowerup();
 

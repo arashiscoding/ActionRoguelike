@@ -22,6 +22,12 @@ void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)
 	// logic in derived classes
 }
 
+FText ASPowerupActor::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	// logic in derived classes
+	return FText::GetEmpty();
+}
+
 void ASPowerupActor::DisablePowerup()
 {
 	bIsActive = false;

@@ -5,6 +5,9 @@
 #include "SAttributeComponent.h"
 #include "SPlayerState.h"
 
+// With this, now instead of NSLOCTEXT, we can use LOCTEXT for defining texts without specifying namespace everytime
+#define LOCTEXT_NAMESPACE "InteractableActors"
+
 ASPowerup_HealthPotion::ASPowerup_HealthPotion()
 {
 	
@@ -40,3 +43,16 @@ void ASPowerup_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 		}
 	}
 }
+
+FText ASPowerup_HealthPotion::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	USAttributeComponent* AttributeComponent = USAttributeComponent::GetAttributeComp(InstigatorPawn);
+	if(ensure(AttributeComponent) && !AttributeComponent->IsDamaged())
+	{
+		return LOCTEXT("HealthPotion_FullHealth", "Already at full health");
+	}
+
+	return FText::Format(LOCTEXT("HealthPotion_Cost", "Costs {0} credits. Restores {1} health"), PowerupPrice, HealingAmount);
+}
+
+#undef LOCTEXT_NAMESPACE
