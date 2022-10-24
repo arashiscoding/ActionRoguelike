@@ -24,4 +24,11 @@ public:
 	/* Not yet implemented! */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	UTexture2D* Icon{};
+
+public:
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		/* "Monsters" is specified in 'Project Settings > Asset Manager' */
+		return FPrimaryAssetId{"Monsters", GetFName()};
+	}
 };

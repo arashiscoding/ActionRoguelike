@@ -7,8 +7,10 @@
 #include "SMonsterDataAsset.h"
 #include "SPlayerState.h"
 #include "SSaveGame.h"
+#include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionSystem/SActionComponent.h"
 #include "AI/SAICharacter.h"
+#include "Engine/AssetManager.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -173,17 +175,45 @@ void ASGameModeBase::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* 
 			const int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
 			FMonsterInfoTableRow* SelectedRow = Rows[RandomIndex];
 
-			AActor* NewBot = GetWorld()->SpawnActor<ASAICharacter>(SelectedRow->MonsterDataAsset->MonsterClass, Locations[0], FRotator::ZeroRotator);
-			if(NewBot)
+			UAssetManager* AssetManager = UAssetManager::GetIfValid();
+			if(AssetManager)
 			{
-				USActionComponent* ActionComp = USActionComponent::GetActionComp(NewBot);
-				if(ActionComp)
-				{
-					for(TSubclassOf<USAction> ActionClass : SelectedRow->MonsterDataAsset->Actions)
-					{
-						ActionComp->AddAction(NewBot, ActionClass);
-					}
-				}
+				LogOnScreen(this, "Loading Monster...", FColor::Green);
+				
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterAssetId, Locations[0]);
+				AssetManager->LoadPrimaryAsset(SelectedRow->MonsterAssetId, Bundles, Delegate);
+			}
+		}
+	}
+}
+
+void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
+{
+	LogOnScreen(this, "Finished loading Monster. Spawning now!", FColor::Green);
+	
+	UAssetManager* AssetManager = UAssetManager::GetIfValid();
+	if(!AssetManager)
+	{
+		return;
+	}
+
+	USMonsterDataAsset* MonsterDataAsset = Cast<USMonsterDataAsset>(AssetManager->GetPrimaryAssetObject(LoadedId));
+	if(!MonsterDataAsset)
+	{
+		return;
+	}
+	
+	AActor* NewBot = GetWorld()->SpawnActor<ASAICharacter>(MonsterDataAsset->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+	if(NewBot)
+	{
+		// Grant special Actions/Effects, etc.
+		USActionComponent* ActionComp = USActionComponent::GetActionComp(NewBot);
+		if(ActionComp)
+		{
+			for(TSubclassOf<USAction>& ActionClass : MonsterDataAsset->Actions)
+			{
+				ActionComp->AddAction(NewBot, ActionClass);
 			}
 		}
 	}

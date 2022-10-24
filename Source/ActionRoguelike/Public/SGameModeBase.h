@@ -14,7 +14,6 @@ class UEnvQueryInstanceBlueprintWrapper;
 class ASAICharacter;
 class ASPowerupActor;
 class UDataTable;
-class USMonsterDataAsset;
 
 USTRUCT(BlueprintType)
 struct FMonsterInfoTableRow : public FTableRowBase
@@ -23,7 +22,8 @@ struct FMonsterInfoTableRow : public FTableRowBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	USMonsterDataAsset* MonsterDataAsset{};
+	FPrimaryAssetId MonsterAssetId{};
+	// USMonsterDataAsset* MonsterDataAsset{};
 
 	/* Chance to pick this monster | Not yet implemented! */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -106,6 +106,9 @@ protected:
 
 	UFUNCTION()
 	void OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	UFUNCTION()
+	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
 
 	UFUNCTION(Exec)
 	void KillAllBots();
