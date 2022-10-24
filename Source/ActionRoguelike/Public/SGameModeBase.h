@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/GameModeBase.h"
 #include "SGameModeBase.generated.h"
@@ -12,6 +13,30 @@ class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class ASAICharacter;
 class ASPowerupActor;
+class UDataTable;
+class USMonsterDataAsset;
+
+USTRUCT(BlueprintType)
+struct FMonsterInfoTableRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USMonsterDataAsset* MonsterDataAsset{};
+
+	/* Chance to pick this monster | Not yet implemented! */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Weight{};
+
+	/* Points required by GameMode to spawn this unit | Not yet implemented! */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SpawnCost{};
+
+	/* Amount of credits awarded to killer of this unit | Not yet implemented! */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float KillReward{};
+};
 
 UCLASS()
 class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
@@ -28,15 +53,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SaveGame")
 	FString SaveSlotName{"SaveGame01"};
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	UDataTable* MonsterDataTable{};
 	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SpawnBotTimerInterval{2.0f};
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UEnvQuery* SpawnBotQuery{};
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	TSubclassOf<ASAICharacter> MinionClass{};
 
 	/* Increases MaxBotCount as the time passes according to its curve */
 	UPROPERTY(EditDefaultsOnly, Category = "AI")

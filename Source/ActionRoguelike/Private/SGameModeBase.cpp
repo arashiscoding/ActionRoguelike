@@ -4,6 +4,7 @@
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
+#include "SMonsterDataAsset.h"
 #include "SPlayerState.h"
 #include "SSaveGame.h"
 #include "AI/SAICharacter.h"
@@ -163,7 +164,16 @@ void ASGameModeBase::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* 
 	
 	if(Locations.IsValidIndex(0))
 	{
-		GetWorld()->SpawnActor<ASAICharacter>(MinionClass, Locations[0], FRotator::ZeroRotator);
+		if(MonsterDataTable)
+		{
+			TArray<FMonsterInfoTableRow*> Rows{};
+			MonsterDataTable->GetAllRows("", Rows);
+
+			const int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
+			FMonsterInfoTableRow* SelectedRow = Rows[RandomIndex];
+
+			GetWorld()->SpawnActor<ASAICharacter>(SelectedRow->MonsterDataAsset->MonsterClass, Locations[0], FRotator::ZeroRotator);
+		}
 	}
 }
 
