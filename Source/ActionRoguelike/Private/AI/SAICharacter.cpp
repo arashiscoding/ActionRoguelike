@@ -24,7 +24,7 @@ ASAICharacter::ASAICharacter()
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	// Enabled on mesh to react to incoming projectiles
 	GetMesh()->SetGenerateOverlapEvents(true);
 }
 
@@ -44,7 +44,7 @@ void ASAICharacter::OnSeePawn(APawn* Pawn)
 		ShowSpottedWidget();
 	}
 	SetTargetActor(Pawn);
-	DrawDebugString(GetWorld(), GetActorLocation(), TEXT("Player Spotted!"), nullptr, FColor::Red, 4.0f, true);
+	//DrawDebugString(GetWorld(), GetActorLocation(), TEXT("Player Spotted!"), nullptr, FColor::Red, 4.0f, true);
 
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_ForgetPlayer);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ForgetPlayer, this, &ASAICharacter::ForgetPlayer, TimeToForgetPlayer, false);

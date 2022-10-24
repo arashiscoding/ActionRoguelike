@@ -26,6 +26,9 @@ ASCharacter::ASCharacter()
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	// Enabled on mesh to react to incoming projectiles
+	GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void ASCharacter::PostInitializeComponents()
