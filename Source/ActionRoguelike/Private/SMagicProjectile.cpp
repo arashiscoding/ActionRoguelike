@@ -14,6 +14,8 @@ ASMagicProjectile::ASMagicProjectile()
 {
 	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
 	AudioComp->SetupAttachment(RootComponent);
+
+	InitialLifeSpan = 10.0f;
 }
 
 void ASMagicProjectile::PostInitializeComponents()

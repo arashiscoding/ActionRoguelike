@@ -45,6 +45,22 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	// }
 }
 
+void USActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// Stop all actions
+	// If we directly iterate on 'Actions' array, by calling 'StopAction', we would modify the 'Actions' array (In Action Effects)
+	TArray<USAction*> ActionsCopy = Actions;
+	for(USAction* Action : ActionsCopy)
+	{
+		if(Action && Action->IsRunning())
+		{
+			Action->StopAction(GetOwner());
+		}
+	}
+	
+	Super::EndPlay(EndPlayReason);
+}
+
 void USActionComponent::AddAction(AActor* Instigator, const TSubclassOf<USAction>& ActionClass)
 {
 	if(!ensure(ActionClass))
