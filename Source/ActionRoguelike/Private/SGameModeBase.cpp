@@ -7,6 +7,7 @@
 #include "SMonsterDataAsset.h"
 #include "SPlayerState.h"
 #include "SSaveGame.h"
+#include "ActionSystem/SActionComponent.h"
 #include "AI/SAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameFramework/GameStateBase.h"
@@ -172,7 +173,18 @@ void ASGameModeBase::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* 
 			const int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
 			FMonsterInfoTableRow* SelectedRow = Rows[RandomIndex];
 
-			GetWorld()->SpawnActor<ASAICharacter>(SelectedRow->MonsterDataAsset->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			AActor* NewBot = GetWorld()->SpawnActor<ASAICharacter>(SelectedRow->MonsterDataAsset->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			if(NewBot)
+			{
+				USActionComponent* ActionComp = USActionComponent::GetActionComp(NewBot);
+				if(ActionComp)
+				{
+					for(TSubclassOf<USAction> ActionClass : SelectedRow->MonsterDataAsset->Actions)
+					{
+						ActionComp->AddAction(NewBot, ActionClass);
+					}
+				}
+			}
 		}
 	}
 }

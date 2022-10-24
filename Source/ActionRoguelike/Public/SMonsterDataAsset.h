@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawn Info")
 	TSubclassOf<ASAICharacter> MonsterClass{};
 
-	/* Actions/Effects to grant this monster | Not yet implemented! */
+	/* Actions/Effects to grant this monster */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawn Info")
 	TArray<TSubclassOf<USAction>> Actions{};
 
