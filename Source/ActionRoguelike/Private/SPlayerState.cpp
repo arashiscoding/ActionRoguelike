@@ -2,8 +2,7 @@
 
 
 #include "SPlayerState.h"
-
-#include "SSaveGame.h"
+#include "SaveSystem/SSaveGame.h"
 #include "Net/UnrealNetwork.h"
 
 

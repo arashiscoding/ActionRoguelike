@@ -6,7 +6,6 @@
 #include "SCharacter.h"
 #include "SMonsterDataAsset.h"
 #include "SPlayerState.h"
-#include "SSaveGame.h"
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionSystem/SActionComponent.h"
 #include "AI/SAICharacter.h"
@@ -15,7 +14,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Powerup/SPowerupActor.h"
-#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
+#include "SaveSystem/SSaveGameSubsystem.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ara.SpawnBots"), true, TEXT("Enable spawning of bots."), ECVF_Cheat);
@@ -29,13 +28,11 @@ void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FS
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
+	USSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USSaveGameSubsystem>();
+
+	// Optional save slot name (If not provided, falls back to name specified in SaveGameSettings class/INI)
 	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
-	if(SelectedSaveSlot.Len() > 0)
-	{
-		SaveSlotName = SelectedSaveSlot;
-	}
-	
-	LoadSaveGame();
+	SG->LoadSaveGame(SelectedSaveSlot);
 }
 
 void ASGameModeBase::StartPlay()
@@ -56,11 +53,8 @@ void ASGameModeBase::StartPlay()
 void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 	// Calling before Super:: so we set variables before "BeginPlayingState" is called in PlayerController (Which is where we instantiate UI)
-	ASPlayerState* PS = NewPlayer->GetPlayerState<ASPlayerState>();
-	if(PS)
-	{
-		PS->LoadPlayerState(SaveGameObject);
-	}
+	USSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USSaveGameSubsystem>();
+	SG->HandleStartingNewPlayer(NewPlayer);
 
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
@@ -276,120 +270,5 @@ void ASGameModeBase::RespawnPlayerDelayed(AController* Controller)
 		Controller->UnPossess();
 
 		RestartPlayer(Controller);
-	}
-}
-
-void ASGameModeBase::WriteSaveGame()
-{
-	for(int32 i{0}; i<GameState->PlayerArray.Num(); i++)
-	{
-		ASPlayerState* PS = Cast<ASPlayerState>(GameState->PlayerArray[i]);
-		if(PS)
-		{
-			PS->SavePlayerState(SaveGameObject);
-			break; // single player only at this point
-		}
-	}
-
-	SaveGameObject->SavedActors.Empty();
-
-	for(TActorIterator<AActor> It(GetWorld()); It; ++It)
-	{
-		AActor* Actor = *It;
-		if(!Actor->Implements<USGameplayInterface>())
-		{
-			continue;
-		}
-		
-		FActorSaveData ActorSaveData;
-		ActorSaveData.ActorName = Actor->GetName();
-		ActorSaveData.Transform = Actor->GetActorTransform();
-
-		FMemoryWriter MemoryWriter(ActorSaveData.ByteData);
-
-		// Pass the array to fill with data from Actor
-		FObjectAndNameAsStringProxyArchive Ar(MemoryWriter, true);
-
-		// Find only variables with UPROPERTY(SaveGame)
-		Ar.ArIsSaveGame = true;
-
-		// Converts Actor's variables with UPROPERTY(SaveGame) into binary array
-		Actor->Serialize(Ar);
-		
-		SaveGameObject->SavedActors.Emplace(ActorSaveData);
-	}
-
-	/* Synchronous Saving */
-	//UGameplayStatics::SaveGameToSlot(SaveGameObject, SaveSlotName, 0);
-
-	/* Asynchronous Saving */
-	FAsyncSaveGameToSlotDelegate SavedDelegate;
-	SavedDelegate.BindUObject(this, &ASGameModeBase::SaveGameDelegateFunction);
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Purple, TEXT("Starting to save"));
-	UGameplayStatics::AsyncSaveGameToSlot(SaveGameObject, SaveSlotName, 0, SavedDelegate);
-}
-
-void ASGameModeBase::LoadSaveGame()
-{
-	if(!UGameplayStatics::DoesSaveGameExist(SaveSlotName, 0))
-	{
-		SaveGameObject = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
-	
-		UE_LOG(LogTemp, Warning, TEXT("Created new SaveGame data."));
-		return;
-	}
-	
-	SaveGameObject = Cast<USSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
-	if(!SaveGameObject)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to load SaveGame data!"));
-		return;
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Loaded SaveGame data."));
-
-	for(TActorIterator<AActor> It(GetWorld()); It; ++It)
-	{
-		AActor* Actor = *It;
-		if(!Actor->Implements<USGameplayInterface>())
-		{
-			continue;
-		}
-
-		for(FActorSaveData ActorSaveData : SaveGameObject->SavedActors)
-		{
-			if(ActorSaveData.ActorName == Actor->GetName())
-			{
-				Actor->SetActorTransform(ActorSaveData.Transform);
-
-				FMemoryReader MemoryReader(ActorSaveData.ByteData);
-
-				// Pass the array to fill with data from Actor
-				FObjectAndNameAsStringProxyArchive Ar(MemoryReader, true);
-
-				// Find only variables with UPROPERTY(SaveGame)
-				Ar.ArIsSaveGame = true;
-
-				// Convert binary array back into Actor's variables with UPROPERTY(SaveGame)
-				Actor->Serialize(Ar);
-
-				ISGameplayInterface::Execute_OnActorLoaded(Actor);
-				
-				break;
-			}
-		}
-	}
-}
-
-void ASGameModeBase::SaveGameDelegateFunction(const FString& SlotName, const int32 UserIndex, bool bSuccess)
-{
-	if(bSuccess)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Saved Successfully!"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Save Failed!"));
 	}
 }

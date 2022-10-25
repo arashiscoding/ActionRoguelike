@@ -47,13 +47,6 @@ public:
 	ASGameModeBase();
 
 protected:
-	UPROPERTY()
-	USSaveGame* SaveGameObject{};
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "SaveGame")
-	FString SaveSlotName{"SaveGame01"};
-
-
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UDataTable* MonsterDataTable{};
 	
@@ -118,12 +111,4 @@ protected:
 
 public:
 	virtual void OnActorKilled(AActor* VictimActor, AActor* KillerActor);
-
-	UFUNCTION(BlueprintCallable, Category = "SaveGame")
-	void WriteSaveGame();
-
-	void LoadSaveGame();
-
-private:
-	void SaveGameDelegateFunction(const FString& SlotName, const int32 UserIndex, bool bSuccess);
 };
