@@ -2,6 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "SGameplayInterface.h"
 #include "GameFramework/Actor.h"
 #include "SItemChest.generated.h"
@@ -21,6 +22,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* LidMesh{};
 
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect")
+	bool bKeyRequired{};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect")
+	FGameplayTag RequiredKeyCard{};
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effect")
 	float TargetPitch{110.0f};
 
@@ -33,7 +41,14 @@ protected:
 private:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 	virtual void OnActorLoaded_Implementation() override;
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+
+	void ChangeLidState();
 
 	UFUNCTION()
 	void OnRep_LidOpened();
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void AnimateToggleLid();
 };

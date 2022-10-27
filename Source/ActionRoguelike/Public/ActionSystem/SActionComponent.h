@@ -35,7 +35,7 @@ protected:
 	TArray<USAction*> Actions{};
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gameplay Tags")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Gameplay Tags")
 	FGameplayTagContainer ActiveGameplayTags{};
 
 	UPROPERTY(BlueprintAssignable)
