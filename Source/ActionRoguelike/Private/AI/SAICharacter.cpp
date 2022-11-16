@@ -11,7 +11,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
-#include "Widget/SWorldUserWidget.h"
+#include "UI/SWorldUserWidget.h"
 
 
 ASAICharacter::ASAICharacter()

@@ -165,25 +165,24 @@ void ASGameModeBase::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* 
 	TArray<FVector> Locations{};
 	QueryInstance->GetQueryResultsAsLocations(Locations);
 	
-	if(Locations.IsValidIndex(0))
+	if(Locations.IsValidIndex(0) && MonsterDataTable)
 	{
-		if(MonsterDataTable)
+		TArray<FMonsterInfoTableRow*> Rows{};
+		MonsterDataTable->GetAllRows("", Rows);
+
+		// Select random enemy
+		const int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
+		FMonsterInfoTableRow* SelectedRow = Rows[RandomIndex];
+
+		
+		UAssetManager* AssetManager = UAssetManager::GetIfValid();
+		if(AssetManager)
 		{
-			TArray<FMonsterInfoTableRow*> Rows{};
-			MonsterDataTable->GetAllRows("", Rows);
-
-			const int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
-			FMonsterInfoTableRow* SelectedRow = Rows[RandomIndex];
-
-			UAssetManager* AssetManager = UAssetManager::GetIfValid();
-			if(AssetManager)
-			{
-				LogOnScreen(this, "Loading Monster...", FColor::Green);
+			LogOnScreen(this, "Loading Monster...", FColor::Green);
 				
-				TArray<FName> Bundles;
-				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterAssetId, Locations[0]);
-				AssetManager->LoadPrimaryAsset(SelectedRow->MonsterAssetId, Bundles, Delegate);
-			}
+			TArray<FName> Bundles;
+			FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterAssetId, Locations[0]);
+			AssetManager->LoadPrimaryAsset(SelectedRow->MonsterAssetId, Bundles, Delegate);
 		}
 	}
 }
@@ -193,27 +192,25 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoca
 	LogOnScreen(this, "Finished loading Monster. Spawning now!", FColor::Green);
 	
 	UAssetManager* AssetManager = UAssetManager::GetIfValid();
-	if(!AssetManager)
+	if(AssetManager)
 	{
-		return;
-	}
-
-	USMonsterDataAsset* MonsterDataAsset = Cast<USMonsterDataAsset>(AssetManager->GetPrimaryAssetObject(LoadedId));
-	if(!MonsterDataAsset)
-	{
-		return;
-	}
-	
-	AActor* NewBot = GetWorld()->SpawnActor<ASAICharacter>(MonsterDataAsset->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
-	if(NewBot)
-	{
-		// Grant special Actions/Effects, etc.
-		USActionComponent* ActionComp = USActionComponent::GetActionComp(NewBot);
-		if(ActionComp)
+		USMonsterDataAsset* MonsterDataAsset = Cast<USMonsterDataAsset>(AssetManager->GetPrimaryAssetObject(LoadedId));
+		if(!MonsterDataAsset)
 		{
-			for(TSubclassOf<USAction>& ActionClass : MonsterDataAsset->Actions)
+			return;
+		}
+		
+		AActor* NewBot = GetWorld()->SpawnActor<ASAICharacter>(MonsterDataAsset->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+		if(NewBot)
+		{
+			// Grant special Actions/Effects, etc.
+			USActionComponent* ActionComp = USActionComponent::GetActionComp(NewBot);
+			if(ActionComp)
 			{
-				ActionComp->AddAction(NewBot, ActionClass);
+				for(TSubclassOf<USAction>& ActionClass : MonsterDataAsset->Actions)
+				{
+					ActionComp->AddAction(NewBot, ActionClass);
+				}
 			}
 		}
 	}

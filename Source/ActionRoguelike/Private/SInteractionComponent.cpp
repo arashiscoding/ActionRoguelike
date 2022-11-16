@@ -5,7 +5,7 @@
 #include "SCharacter.h"
 #include "SGameplayInterface.h"
 #include "Blueprint/UserWidget.h"
-#include "Widget/SWorldUserWidget.h"
+#include "UI/SWorldUserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDrawDebugInteractions(TEXT("ara.DrawDebugInteractions"), false, TEXT("Enable debug lines for Interaction component"), ECVF_Cheat);
 
