@@ -9,6 +9,7 @@ public class ActionRoguelikeEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "ActionRoguelike" } );
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
+        ExtraModuleNames.AddRange( new string[] { "ActionRoguelike" } );
 	}
 }
