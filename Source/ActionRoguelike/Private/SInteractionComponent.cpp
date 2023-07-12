@@ -12,6 +12,9 @@ static TAutoConsoleVariable<bool> CVarDrawDebugInteractions(TEXT("ara.DrawDebugI
 USInteractionComponent::USInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	// Since we use Camera info in Tick we want the most up to date camera position for tracing
+	PrimaryComponentTick.TickGroup = TG_PostUpdateWork;
 }
 
 void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
