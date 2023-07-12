@@ -16,7 +16,7 @@ void ASTargetDummy::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AttributeComp->OnHealthChanged.AddDynamic(this, &ASTargetDummy::OnHealthChanged);
+	AttributeComp->OnHealthChanged.AddUniqueDynamic(this, &ASTargetDummy::OnHealthChanged);
 }
 
 void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
