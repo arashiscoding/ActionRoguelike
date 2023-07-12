@@ -15,6 +15,14 @@ class ACTIONROGUELIKE_API USAction_ProjectileAttack : public USAction
 	GENERATED_BODY()
 
 protected:
+	/* Sphere radius of the sweep to find desired target under crosshair. Adjusts final projectile direction */
+	UPROPERTY(EditAnywhere, Category= "Targeting")
+	float SweepRadius{20.0f};
+	
+	/* Fallback distance when sweep finds no collision under crosshair. Adjusts final projectile direction */
+	UPROPERTY(EditAnywhere, Category= "Targeting")
+	float SweepDistance{5000.0f};
+	
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<ASProjectileBase> ProjectileClass{};
 

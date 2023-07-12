@@ -38,22 +38,20 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 	}
 	
 	FCollisionShape CollisionShape{};
-	CollisionShape.SetSphere(20.0f);
+	CollisionShape.SetSphere(SweepRadius);
 
 	// Ignore Player
 	FCollisionQueryParams CollisionQueryParams{};
 	CollisionQueryParams.AddIgnoredActor(InstigatorCharacter);
 
-	FCollisionObjectQueryParams ObjectQueryParams{};
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-
-	FVector TraceStart{(InstigatorCharacter->GetPawnViewLocation()) + ((InstigatorCharacter->GetControlRotation().Vector() * 30))};
-	FVector TraceEnd{TraceStart + (InstigatorCharacter->GetControlRotation().Vector() * 5000)};
+	FVector TraceDirection = InstigatorCharacter->GetControlRotation().Vector();
+	
+	// Add sweep radius onto start to avoid the sphere clipping into floor/walls the camera is directly against
+	FVector TraceStart = InstigatorCharacter->GetPawnViewLocation() + (TraceDirection * SweepRadius);
+	FVector TraceEnd = TraceStart + (TraceDirection * SweepDistance);
 	
 	FHitResult HitResult{};
-	if(GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape, CollisionQueryParams))
+	if(GetWorld()->SweepSingleByChannel(HitResult, TraceStart, TraceEnd, FQuat::Identity, ECC_GameTraceChannel1, CollisionShape, CollisionQueryParams))
 	{
 		TraceEnd = HitResult.ImpactPoint;
 	}
