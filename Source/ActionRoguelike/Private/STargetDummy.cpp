@@ -10,6 +10,12 @@ ASTargetDummy::ASTargetDummy()
 	SetRootComponent(MeshComp);
 
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
+}
+
+void ASTargetDummy::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASTargetDummy::OnHealthChanged);
 }
 
