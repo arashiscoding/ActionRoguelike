@@ -31,42 +31,46 @@ void USAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 
 void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharacter)
 {
-	if(ensureAlways(ProjectileClass))
+	if(!ensureAlways(ProjectileClass))
 	{
-		FCollisionShape CollisionShape{};
-		CollisionShape.SetSphere(20.0f);
-
-		FCollisionQueryParams CollisionQueryParams{};
-		CollisionQueryParams.AddIgnoredActor(InstigatorCharacter);
-
-		FCollisionObjectQueryParams ObjectQueryParams{};
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-
-		FVector TraceStart{(InstigatorCharacter->GetPawnViewLocation()) + ((InstigatorCharacter->GetControlRotation().Vector() * 30))};
-		FVector TraceEnd{TraceStart + (InstigatorCharacter->GetControlRotation().Vector() * 5000)};
-		
-		FHitResult HitResult{};
-		if(GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape, CollisionQueryParams))
-		{
-			TraceEnd = HitResult.ImpactPoint;
-		}
-		
-		FVector HandLocation{InstigatorCharacter->GetMesh()->GetSocketLocation(HandSocketName)};
-		
-		FVector Direction = TraceEnd - HandLocation;
-		FRotator ProjectileRotation = Direction.Rotation();
-		
-		//FRotator ProjectileRotation{UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd)};
-		FTransform SpawnTM{ProjectileRotation, HandLocation};
-		
-		FActorSpawnParameters SpawnParameters{};
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParameters.Instigator = InstigatorCharacter;
-
-		GetWorld()->SpawnActor<ASProjectileBase>(ProjectileClass, SpawnTM, SpawnParameters);
+		StopAction(InstigatorCharacter);
+		return;
 	}
+	
+	FCollisionShape CollisionShape{};
+	CollisionShape.SetSphere(20.0f);
+
+	// Ignore Player
+	FCollisionQueryParams CollisionQueryParams{};
+	CollisionQueryParams.AddIgnoredActor(InstigatorCharacter);
+
+	FCollisionObjectQueryParams ObjectQueryParams{};
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	FVector TraceStart{(InstigatorCharacter->GetPawnViewLocation()) + ((InstigatorCharacter->GetControlRotation().Vector() * 30))};
+	FVector TraceEnd{TraceStart + (InstigatorCharacter->GetControlRotation().Vector() * 5000)};
+	
+	FHitResult HitResult{};
+	if(GetWorld()->SweepSingleByObjectType(HitResult, TraceStart, TraceEnd, FQuat::Identity, ObjectQueryParams, CollisionShape, CollisionQueryParams))
+	{
+		TraceEnd = HitResult.ImpactPoint;
+	}
+	
+	FVector HandLocation{InstigatorCharacter->GetMesh()->GetSocketLocation(HandSocketName)};
+	
+	FVector Direction = TraceEnd - HandLocation;
+	FRotator ProjectileRotation = Direction.Rotation();
+	//FRotator ProjectileRotation{UKismetMathLibrary::FindLookAtRotation(HandLocation, TraceEnd)};
+	
+	FTransform SpawnTM{ProjectileRotation, HandLocation};
+	
+	FActorSpawnParameters SpawnParameters{};
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParameters.Instigator = InstigatorCharacter;
+
+	GetWorld()->SpawnActor<ASProjectileBase>(ProjectileClass, SpawnTM, SpawnParameters);
 
 	StopAction(InstigatorCharacter);
 }
