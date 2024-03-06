@@ -3,7 +3,6 @@
 #include "SExplosiveBarrel.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
-
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");

@@ -4,7 +4,6 @@
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
 
-
 ASPowerupActor::ASPowerupActor()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));

@@ -9,7 +9,6 @@
 #include "ActionSystem/SActionEffect.h"
 #include "ActionSystem/SActionComponent.h"
 
-
 ASMagicProjectile::ASMagicProjectile()
 {
 	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));

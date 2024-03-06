@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SGameModeBase.h"
+#include "Framework/SGameModeBase.h"
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
 #include "SMonsterDataAsset.h"
-#include "SPlayerState.h"
+#include "Framework/SPlayerState.h"
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionSystem/SActionComponent.h"
 #include "AI/SAICharacter.h"
@@ -15,7 +15,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Powerup/SPowerupActor.h"
 #include "SaveSystem/SSaveGameSubsystem.h"
-
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ara.SpawnBots"), true, TEXT("Enable spawning of bots."), ECVF_Cheat);
 
