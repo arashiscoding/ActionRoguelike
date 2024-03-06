@@ -27,9 +27,9 @@ ASGameModeBase::ASGameModeBase()
 void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
-
+	
 	USSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USSaveGameSubsystem>();
-
+	
 	// Optional save slot name (If not provided, falls back to name specified in SaveGameSettings class/INI)
 	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
 	SG->LoadSaveGame(SelectedSaveSlot);
@@ -39,7 +39,7 @@ void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBot, this, &ASGameModeBase::SpawnBot, SpawnBotTimerInterval, true);
-
+	
 	if(PowerupClasses.Num() > 0)
 	{
 		// Run EQS to find potential power-up spawn locations
@@ -53,7 +53,7 @@ void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* N
 	// Calling before Super:: so we set variables before "BeginPlayingState" is called in PlayerController (Which is where we instantiate UI)
 	USSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USSaveGameSubsystem>();
 	SG->HandleStartingNewPlayer(NewPlayer);
-
+	
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
@@ -165,17 +165,15 @@ void ASGameModeBase::OnSpawnBotQueryFinished(TSharedPtr<FEnvQueryResult> Result)
 	{
 		TArray<FMonsterInfoTableRow*> Rows{};
 		MonsterDataTable->GetAllRows("", Rows);
-
+		
 		// Select random enemy
 		const int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
 		FMonsterInfoTableRow* SelectedRow = Rows[RandomIndex];
-
 		
-		UAssetManager* AssetManager = UAssetManager::GetIfValid();
-		if(AssetManager)
+		if(UAssetManager* AssetManager = UAssetManager::GetIfInitialized())
 		{
 			LogOnScreen(this, "Loading Monster...", FColor::Green);
-				
+			
 			TArray<FName> Bundles;
 			FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterAssetId, Locations[0]);
 			AssetManager->LoadPrimaryAsset(SelectedRow->MonsterAssetId, Bundles, Delegate);
@@ -187,8 +185,7 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoca
 {
 	LogOnScreen(this, "Finished loading Monster. Spawning now!", FColor::Green);
 	
-	UAssetManager* AssetManager = UAssetManager::GetIfValid();
-	if(AssetManager)
+	if(UAssetManager* AssetManager = UAssetManager::GetIfInitialized())
 	{
 		USMonsterDataAsset* MonsterDataAsset = Cast<USMonsterDataAsset>(AssetManager->GetPrimaryAssetObject(LoadedId));
 		if(!MonsterDataAsset)
@@ -200,8 +197,7 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoca
 		if(NewBot)
 		{
 			// Grant special Actions/Effects, etc.
-			USActionComponent* ActionComp = USActionComponent::GetActionComp(NewBot);
-			if(ActionComp)
+			if(USActionComponent* ActionComp = USActionComponent::GetActionComp(NewBot))
 			{
 				for(TSubclassOf<USAction>& ActionClass : MonsterDataAsset->Actions)
 				{
@@ -227,10 +223,9 @@ void ASGameModeBase::KillAllBots()
 void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 {
 	UE_LOG(LogTemp, Log, TEXT("SGameMode | OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(KillerActor));
-
+	
 	// Respawn Players after delay
-	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
-	if(Player)
+	if(ASCharacter* Player = Cast<ASCharacter>(VictimActor))
 	{
 		FTimerHandle TimerHandle_RespawnPlayer{};
 		
@@ -240,13 +235,11 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 		float PlayerRespawnDelay{2.0f};
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnPlayer, Delegate, PlayerRespawnDelay, false);
 	}
-
 	
 	// Give Credits for kill
-	ASCharacter* KillerPlayer = Cast<ASCharacter>(KillerActor);
-	if(KillerPlayer)
+	if(ASCharacter* Player = Cast<ASCharacter>(KillerActor))
 	{
-		ASPlayerState* SPlayerState = KillerPlayer->GetPlayerState<ASPlayerState>();
+		ASPlayerState* SPlayerState = Player->GetPlayerState<ASPlayerState>();
 		if(ensure(SPlayerState))
 		{
 			SPlayerState->AddCredits(CreditsPerKill);
@@ -259,7 +252,6 @@ void ASGameModeBase::RespawnPlayerDelayed(AController* Controller)
 	if(ensure(Controller))
 	{
 		Controller->UnPossess();
-
 		RestartPlayer(Controller);
 	}
 }

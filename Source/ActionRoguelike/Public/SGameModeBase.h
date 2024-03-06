@@ -21,7 +21,6 @@ struct FMonsterInfoTableRow : public FTableRowBase
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FPrimaryAssetId MonsterAssetId{};
-	// USMonsterDataAsset* MonsterDataAsset{};
 
 	/* Chance to pick this monster | Not yet implemented! */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -78,8 +77,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Powerups")
 	float RequiredPowerupDistance{2000.0f};
-	
-	
+
 protected:
 	FTimerHandle TimerHandle_SpawnBot;
 
@@ -93,7 +91,6 @@ protected:
 	void OnSpawnPowerupQueryFinished(TSharedPtr<FEnvQueryResult> Result);
 	
 	void SpawnBot();
-	
 	void OnSpawnBotQueryFinished(TSharedPtr<FEnvQueryResult> Result);
 
 	UFUNCTION()
