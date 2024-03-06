@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "UObject/NoExportTypes.h"
@@ -28,7 +27,7 @@ class ACTIONROGUELIKE_API USAction : public UObject
 	GENERATED_BODY()
 
 public:
-	/* Action name to start/stop without a reference to the object */
+	/** Action name to start/stop without a reference to the object */
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName{};
 
@@ -42,11 +41,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	TSoftObjectPtr<UTexture2D> Icon{};
 	
-	/* Tags added to OwningActor when activated, removed when action stops */
+	/** Tags added to OwningActor when activated, removed when action stops */
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer GrantsTags{};
 
-	/* Action can only start if OwningActor has none of these tags */
+	/** Action can only start if OwningActor has none of these tags */
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer BlockedTags{};
 
@@ -65,7 +64,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Action")
 	void StopAction(AActor* Instigator);
 	
-	/* if we don't override this, we don't have access to its functions in Blueprint*/
+	/** if we don't override this, we don't have access to its functions in Blueprint*/
 	virtual UWorld* GetWorld() const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
@@ -81,7 +80,7 @@ protected:
 	UFUNCTION()
 	void OnRep_RepData();
 
-	/* Extra step for networking classes that derive from UObject */
+	/** Extra step for networking classes that derive from UObject */
 	virtual bool IsSupportedForNetworking() const override
 	{
 		return true;

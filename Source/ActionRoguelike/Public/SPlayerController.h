@@ -23,7 +23,7 @@ protected:
 	UPROPERTY(BlueprintAssignable)
 	FOnPawnChanged OnPawnChanged{};
 
-	/* Listen for incoming PlayerState (for clients this may be nullptr when initially joining a game,
+	/** Listen for incoming PlayerState (for clients this may be nullptr when initially joining a game,
 	 * afterwards PlayerState won't change again as PlayerControllers maintain the same PlayerState throughout the level) */
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStateChanged OnPlayerStateChanged{};

@@ -1,11 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "Powerup/SPowerupActor.h"
 #include "SPowerup_Credit.generated.h"
-
 
 UCLASS()
 class ACTIONROGUELIKE_API ASPowerup_Credit : public ASPowerupActor

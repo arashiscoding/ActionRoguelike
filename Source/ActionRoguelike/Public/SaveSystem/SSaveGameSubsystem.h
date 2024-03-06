@@ -18,7 +18,7 @@ class ACTIONROGUELIKE_API USSaveGameSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 protected:
-	/* Name of slot to save/load to disk. Filled by SaveGameSettings (can be overriden from GameMode's InitGame()) */
+	/** Name of slot to save/load to disk. Filled by SaveGameSettings (can be overriden from GameMode's InitGame()) */
 	FString SaveSlotName;
 
 	UPROPERTY()
@@ -31,20 +31,20 @@ protected:
 	FOnSaveGameSignature OnSaveGameWritten;
 
 public:
-	/* Initialize Subsystem, good moment to load in SaveGameSettings variables */
+	/** Initialize Subsystem, good moment to load in SaveGameSettings variables */
 	void Initialize(FSubsystemCollectionBase& Collection) override;
 	
-	/* Restore serialized data from PlayerState into player */
+	/** Restore serialized data from PlayerState into player */
 	void HandleStartingNewPlayer(AController* NewPlayer);
 
-	/* Change slot name, will be used next time we load/save data */
+	/** Change slot name, will be used next time we load/save data */
 	UFUNCTION(BlueprintCallable)
 	void SetSlotName(FString NewSlotName);
 
 	UFUNCTION(BlueprintCallable, Category = "SaveGame")
 	void WriteSaveGame();
 
-	/* Load from disk, optional slot name */
+	/** Load from disk, optional slot name */
 	void LoadSaveGame(FString InSlotName = "");
 
 private:

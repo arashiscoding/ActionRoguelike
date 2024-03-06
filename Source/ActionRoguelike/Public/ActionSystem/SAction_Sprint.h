@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "ActionSystem/SAction.h"
 #include "SAction_Sprint.generated.h"

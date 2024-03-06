@@ -8,7 +8,9 @@
 class USAttributeComponent;
 
 /**
- * This buff will return some fraction of damage dealt, to its causer */
+ * This buff will return some fraction of damage dealt, to its causer
+ */
+
 UCLASS()
 class ACTIONROGUELIKE_API USActionEffect_Thorns : public USActionEffect
 {

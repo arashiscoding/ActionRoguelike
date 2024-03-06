@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "CoreMinimal.h"
 #include "ActionSystem/SAction.h"
 #include "SAction_ProjectileAttack.generated.h"
@@ -15,11 +14,11 @@ class ACTIONROGUELIKE_API USAction_ProjectileAttack : public USAction
 	GENERATED_BODY()
 
 protected:
-	/* Sphere radius of the sweep to find desired target under crosshair. Adjusts final projectile direction */
+	/** Sphere radius of the sweep to find desired target under crosshair. Adjusts final projectile direction */
 	UPROPERTY(EditAnywhere, Category= "Targeting")
 	float SweepRadius{20.0f};
 	
-	/* Fallback distance when sweep finds no collision under crosshair. Adjusts final projectile direction */
+	/** Fallback distance when sweep finds no collision under crosshair. Adjusts final projectile direction */
 	UPROPERTY(EditAnywhere, Category= "Targeting")
 	float SweepDistance{5000.0f};
 	
