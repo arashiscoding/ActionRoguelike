@@ -42,11 +42,9 @@ void ASGameModeBase::StartPlay()
 
 	if(PowerupClasses.Num() > 0)
 	{
-		UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnPowerupQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
-		if(ensureMsgf(QueryInstance, TEXT("Add SpawnPowerup to SGameModeBase")))
-		{
-			QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnSpawnPowerupQueryFinished);
-		}
+		// Run EQS to find potential power-up spawn locations
+		FEnvQueryRequest Request(SpawnPowerupQuery, this);
+		Request.Execute(EEnvQueryRunMode::AllMatching, this, &ASGameModeBase::OnSpawnPowerupQueryFinished);
 	}
 }
 
@@ -59,16 +57,17 @@ void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* N
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
 }
 
-void ASGameModeBase::OnSpawnPowerupQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+void ASGameModeBase::OnSpawnPowerupQueryFinished(TSharedPtr<FEnvQueryResult> Result)
 {
-	if(QueryStatus != EEnvQueryStatus::Success)
+	FEnvQueryResult* QueryResult = Result.Get();
+	if(!QueryResult->IsSuccessful())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("SGameMode | Spawn Powerup EQS query failed!")));
 		return;
 	}
 
 	TArray<FVector> Locations{};
-	QueryInstance->GetQueryResultsAsLocations(Locations);
+	QueryResult->GetAllAsLocations(Locations);
 
 	// Keep used locations to easily check distance between points
 	TArray<FVector> UsedLocations{};
@@ -147,23 +146,22 @@ void ASGameModeBase::SpawnBot()
 		return;
 	}
 	
-	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
-	if(ensureMsgf(QueryInstance, TEXT("Add SpawnBotQuery to SGameModeBase")))
-	{
-		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnSpawnBotQueryFinished);
-	}
+	// Run EQS to find valid spawn location
+	FEnvQueryRequest Request(SpawnBotQuery, this);
+	Request.Execute(EEnvQueryRunMode::RandomBest5Pct, this, &ASGameModeBase::OnSpawnBotQueryFinished);
 }
 
-void ASGameModeBase::OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+void ASGameModeBase::OnSpawnBotQueryFinished(TSharedPtr<FEnvQueryResult> Result)
 {
-	if(QueryStatus != EEnvQueryStatus::Success)
+	FEnvQueryResult* QueryResult = Result.Get();
+	if (!QueryResult->IsSuccessful())
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("SGameMode | Spawn Bot EQS query failed!")));
 		return;
 	}
 	
 	TArray<FVector> Locations{};
-	QueryInstance->GetQueryResultsAsLocations(Locations);
+	QueryResult->GetAllAsLocations(Locations);
 	
 	if(Locations.IsValidIndex(0) && MonsterDataTable)
 	{

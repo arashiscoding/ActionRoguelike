@@ -9,7 +9,6 @@
 
 class USSaveGame;
 class UEnvQuery;
-class UEnvQueryInstanceBlueprintWrapper;
 class ASAICharacter;
 class ASPowerupActor;
 class UDataTable;
@@ -91,13 +90,11 @@ protected:
 	/* Signals that a player is ready to enter the game, which may start it up */
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	
-	UFUNCTION()
-	void OnSpawnPowerupQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void OnSpawnPowerupQueryFinished(TSharedPtr<FEnvQueryResult> Result);
 	
 	void SpawnBot();
-
-	UFUNCTION()
-	void OnSpawnBotQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	
+	void OnSpawnBotQueryFinished(TSharedPtr<FEnvQueryResult> Result);
 
 	UFUNCTION()
 	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
