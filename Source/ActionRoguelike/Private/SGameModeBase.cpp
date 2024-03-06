@@ -122,10 +122,8 @@ void ASGameModeBase::SpawnBot()
 	}
 	
 	int32 NumberOfAliveBots{};
-	for(TActorIterator<ASAICharacter> It{GetWorld()}; It; ++It)
+	for(ASAICharacter* Bot : TActorRange<ASAICharacter>(GetWorld()))
 	{
-		ASAICharacter* Bot = *It;
-
 		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(Bot);
 		if(AttributeComp && AttributeComp->IsAlive())
 		{
@@ -216,10 +214,8 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoca
 
 void ASGameModeBase::KillAllBots()
 {
-	for(TActorIterator<ASAICharacter> It{GetWorld()}; It; ++It)
+	for(ASAICharacter* Bot : TActorRange<ASAICharacter>(GetWorld()))
 	{
-		ASAICharacter* Bot = *It;
-
 		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(Bot);
 		if(AttributeComp && AttributeComp->IsAlive())
 		{
