@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Powerup/SPowerup_HealthPotion.h"
-#include "SAttributeComponent.h"
+#include "Component/SAttributeComponent.h"
 #include "Framework/SPlayerState.h"
 
 // With this, now instead of NSLOCTEXT, we can use LOCTEXT for defining texts without specifying namespace everytime

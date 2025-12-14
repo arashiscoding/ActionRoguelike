@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "STargetDummy.h"
-#include "SAttributeComponent.h"
+#include "GameplayActor/STargetDummy.h"
+#include "Component/SAttributeComponent.h"
 
 // Sets default values
 ASTargetDummy::ASTargetDummy()

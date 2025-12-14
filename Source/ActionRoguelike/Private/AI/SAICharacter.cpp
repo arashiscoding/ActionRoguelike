@@ -4,7 +4,7 @@
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "DrawDebugHelpers.h"
-#include "SAttributeComponent.h"
+#include "Component/SAttributeComponent.h"
 #include "ActionSystem/SActionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"

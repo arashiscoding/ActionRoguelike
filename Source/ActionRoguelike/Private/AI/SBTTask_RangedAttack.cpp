@@ -2,7 +2,7 @@
 
 #include "AI/SBTTask_RangedAttack.h"
 #include "AIController.h"
-#include "SAttributeComponent.h"
+#include "Component/SAttributeComponent.h"
 #include "Projectile/SMagicProjectile.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"

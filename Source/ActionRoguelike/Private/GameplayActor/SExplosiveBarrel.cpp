@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SExplosiveBarrel.h"
+#include "GameplayActor/SExplosiveBarrel.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 ASExplosiveBarrel::ASExplosiveBarrel()

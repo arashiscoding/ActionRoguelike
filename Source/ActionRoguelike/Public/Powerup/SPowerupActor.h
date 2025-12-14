@@ -2,7 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "SGameplayInterface.h"
+#include "Framework/SGameplayInterface.h"
 #include "GameFramework/Actor.h"
 #include "SPowerupActor.generated.h"
 

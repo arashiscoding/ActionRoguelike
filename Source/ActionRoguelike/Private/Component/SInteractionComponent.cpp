@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SInteractionComponent.h"
+#include "Component/SInteractionComponent.h"
 #include "DrawDebugHelpers.h"
 #include "SCharacter.h"
-#include "SGameplayInterface.h"
+#include "Framework/SGameplayInterface.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/SWorldUserWidget.h"
 

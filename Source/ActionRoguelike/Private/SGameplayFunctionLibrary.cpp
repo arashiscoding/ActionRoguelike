@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SGameplayFunctionLibrary.h"
-#include "SAttributeComponent.h"
+#include "Component/SAttributeComponent.h"
 
 bool USGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount)
 {
@@ -15,18 +15,19 @@ bool USGameplayFunctionLibrary::ApplyDamage(AActor* DamageCauser, AActor* Target
 
 bool USGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AActor* TargetActor, float DamageAmount, const FHitResult& HitResult)
 {
-	if(ApplyDamage(DamageCauser, TargetActor, DamageAmount))
+	if(!ApplyDamage(DamageCauser, TargetActor, DamageAmount))
 	{
-		UPrimitiveComponent* HitComp = HitResult.GetComponent();
-		if(HitComp && HitComp->IsSimulatingPhysics(HitResult.BoneName))
-		{
-			FVector HitDirection = HitResult.TraceEnd - HitResult.TraceStart;
-			HitDirection.Normalize();
-			
-			HitComp->AddImpulseAtLocation(HitDirection * 150'000.0f, HitResult.ImpactPoint, HitResult.BoneName);
-			return true;
-		}
-		return true;
+		return false;
 	}
-	return false;
+	
+	UPrimitiveComponent* HitComp = HitResult.GetComponent();
+	if(HitComp && HitComp->IsSimulatingPhysics(HitResult.BoneName))
+	{
+		FVector HitDirection = HitResult.TraceEnd - HitResult.TraceStart;
+		HitDirection.Normalize();
+		
+		HitComp->AddImpulseAtLocation(HitDirection * 150'000.0f, HitResult.ImpactPoint, HitResult.BoneName);
+	}
+	
+	return true;
 }

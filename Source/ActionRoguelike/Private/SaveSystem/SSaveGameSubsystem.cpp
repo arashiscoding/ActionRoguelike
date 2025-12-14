@@ -2,7 +2,7 @@
 
 #include "SaveSystem/SSaveGameSubsystem.h"
 #include "EngineUtils.h"
-#include "SGameplayInterface.h"
+#include "Framework/SGameplayInterface.h"
 #include "Framework/SPlayerState.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"

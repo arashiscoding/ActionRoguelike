@@ -2,7 +2,7 @@
 
 #include "AI/SBTService_CheckHealth.h"
 #include "AIController.h"
-#include "SAttributeComponent.h"
+#include "Component/SAttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 void USBTService_CheckHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

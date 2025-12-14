@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "SItemChest.h"
+#include "GameplayActor/SItemChest.h"
 #include "ActionSystem/SActionComponent.h"
 #include "Net/UnrealNetwork.h"
 

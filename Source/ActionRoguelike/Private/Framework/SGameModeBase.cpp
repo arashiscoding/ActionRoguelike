@@ -2,9 +2,9 @@
 
 #include "Framework/SGameModeBase.h"
 #include "EngineUtils.h"
-#include "SAttributeComponent.h"
+#include "Component/SAttributeComponent.h"
 #include "SCharacter.h"
-#include "SMonsterDataAsset.h"
+#include "DataAsset/SMonsterDataAsset.h"
 #include "Framework/SPlayerState.h"
 #include "ActionRoguelike/ActionRoguelike.h"
 #include "ActionSystem/SActionComponent.h"

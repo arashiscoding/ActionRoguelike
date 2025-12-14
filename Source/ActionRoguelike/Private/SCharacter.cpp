@@ -2,8 +2,8 @@
 
 #include "SCharacter.h"
 #include "ActionSystem/SActionComponent.h"
-#include "SInteractionComponent.h"
-#include "SAttributeComponent.h"
+#include "Component/SInteractionComponent.h"
+#include "Component/SAttributeComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
