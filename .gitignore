@@ -44,7 +44,7 @@ Plugins/Developer/RiderLink
 *.sdf
 *.VC.db
 *.VC.opendb
-*.sln.DotSettings.user
+*.DotSettings.user
 *.vsconfig
 
 # Precompiled Assets
