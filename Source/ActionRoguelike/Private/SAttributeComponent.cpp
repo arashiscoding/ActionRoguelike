@@ -7,7 +7,8 @@
 USAttributeComponent::USAttributeComponent()
 {
 	Health = HealthMax;
-
+	Rage = RageMax/2.0f;
+	
 	SetIsReplicatedByDefault(true);
 }
 

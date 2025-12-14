@@ -14,9 +14,10 @@ class ACTIONROGUELIKE_API USAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	USAttributeComponent();
 
+public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	static USAttributeComponent* GetAttributeComp(AActor* FromActor);
 

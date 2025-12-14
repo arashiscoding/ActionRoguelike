@@ -64,7 +64,7 @@ void ASGameModeBase::OnSpawnPowerupQueryFinished(TSharedPtr<FEnvQueryResult> Res
 		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("SGameMode | Spawn Powerup EQS query failed!")));
 		return;
 	}
-
+	
 	TArray<FVector> Locations{};
 	QueryResult->GetAllAsLocations(Locations);
 
@@ -102,11 +102,11 @@ void ASGameModeBase::OnSpawnPowerupQueryFinished(TSharedPtr<FEnvQueryResult> Res
 		{
 			continue;
 		}
-
+		
 		int32 RandomPowerupClassIndex = FMath::RandRange(0, PowerupClasses.Num()-1);
 		
 		GetWorld()->SpawnActor<ASPowerupActor>(PowerupClasses[RandomPowerupClassIndex], PickedLocation, FRotator::ZeroRotator);
-
+		
 		SpawnCounter++;
 		UsedLocations.Emplace(PickedLocation);
 	}
@@ -129,7 +129,7 @@ void ASGameModeBase::SpawnBot()
 			NumberOfAliveBots++;
 		}
 	}
-
+	
 	//UE_LOG(LogTemp, Log, TEXT("SGameMode | Alive Bots: %d"), NumberOfAliveBots);
 	
 	if(CurveFloat_SpawnBotDifficulty)

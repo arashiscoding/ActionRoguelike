@@ -16,8 +16,24 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	ASCharacter();
+	
+protected:
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	USpringArmComponent* SpringArmComp{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UCameraComponent* CameraComp{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	USInteractionComponent* InteractionComp{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp{};
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	USActionComponent* ActionComp{};
 
 protected:
 	/* Parameter's name in character's material */
@@ -45,22 +61,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect|Material")
 	float HitFlashHealSpeed{2.5f};
-
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USpringArmComponent* SpringArmComp{};
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UCameraComponent* CameraComp{};
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USInteractionComponent* InteractionComp{};
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USAttributeComponent* AttributeComp{};
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USActionComponent* ActionComp{};
 	
 protected:
 	virtual void PostInitializeComponents() override;

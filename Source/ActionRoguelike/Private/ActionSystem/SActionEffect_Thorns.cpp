@@ -15,7 +15,7 @@ USActionEffect_Thorns::USActionEffect_Thorns()
 void USActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
-
+	
 	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(Instigator);
 	if(AttributeComp)
 	{
@@ -26,7 +26,7 @@ void USActionEffect_Thorns::StartAction_Implementation(AActor* Instigator)
 void USActionEffect_Thorns::StopAction_Implementation(AActor* Instigator)
 {
 	Super::StopAction_Implementation(Instigator);
-
+	
 	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(Instigator);
 	if(AttributeComp)
 	{
@@ -46,7 +46,7 @@ void USActionEffect_Thorns::OnHealthChanged(AActor* InstigatorActor, USAttribute
 		{
 			return;
 		}
-
+		
 		ReflectedDamageAmount = FMath::Abs(ReflectedDamageAmount);
 		
 		USGameplayFunctionLibrary::ApplyDamage(OwningActor, InstigatorActor, ReflectedDamageAmount);

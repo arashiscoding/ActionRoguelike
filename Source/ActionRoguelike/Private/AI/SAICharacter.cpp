@@ -13,17 +13,16 @@
 #include "Perception/PawnSensingComponent.h"
 #include "UI/SWorldUserWidget.h"
 
-
 ASAICharacter::ASAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
-
+	
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>(TEXT("AttributeComp"));
-
+	
 	ActionComp = CreateDefaultSubobject<USActionComponent>(TEXT("ActionComp"));
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
+	
 	// Enabled on mesh to react to incoming projectiles
 	GetMesh()->SetGenerateOverlapEvents(true);
 }
@@ -31,9 +30,9 @@ ASAICharacter::ASAICharacter()
 void ASAICharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
+	
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnSeePawn);
-
+	
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
 }
 
@@ -45,7 +44,7 @@ void ASAICharacter::OnSeePawn(APawn* Pawn)
 	}
 	SetTargetActor(Pawn);
 	//DrawDebugString(GetWorld(), GetActorLocation(), TEXT("Player Spotted!"), nullptr, FColor::Red, 4.0f, true);
-
+	
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_ForgetPlayer);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle_ForgetPlayer, this, &ASAICharacter::ForgetPlayer, TimeToForgetPlayer, false);
 }
@@ -56,7 +55,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 	{
 		return;
 	}
-
+	
 	// If bot hasn't seen the player yet and player shoots at it, it can get aware of the player
 	if(InstigatorActor != this)
 	{
@@ -66,7 +65,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 		}
 		SetTargetActor(InstigatorActor);
 	}
-
+	
 	if(!HealthBarWidget)
 	{
 		HealthBarWidget = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
@@ -78,9 +77,9 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			HealthBarWidget->AddToViewport();
 		}
 	}
-
+	
 	GetMesh()->SetScalarParameterValueOnMaterials(HitReceivedTimeName, GetWorld()->TimeSeconds);
-
+	
 	// Died
 	if(!AttributeComp->IsAlive())
 	{
@@ -90,16 +89,16 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 		{
 			MyAIController->GetBrainComponent()->StopLogic("Killed");
 		}
-
+		
 		// ragdoll
 		GetMesh()->SetCollisionProfileName("Ragdoll");
 		GetMesh()->SetAllBodiesSimulatePhysics(true);
-
+		
 		// disable collision to avoid colliding with player and projectiles
 		// disable CharacterMovement to avoid applying gravity when there's no collision
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetCharacterMovement()->DisableMovement();
-
+		
 		// SetLifeSpan will destroy the actor after this amount of time(s)
 		SetLifeSpan(10.0f);
 	}

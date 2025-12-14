@@ -12,7 +12,7 @@ USActionEffect::USActionEffect()
 void USActionEffect::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
-
+	
 	if(Duration > 0.0f)
 	{
 		FTimerDelegate Delegate{};
@@ -20,7 +20,7 @@ void USActionEffect::StartAction_Implementation(AActor* Instigator)
 		
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_Duration, Delegate, Duration, false);
 	}
-
+	
 	if(Period > 0.0f)
 	{
 		FTimerDelegate Delegate{};
@@ -39,10 +39,10 @@ void USActionEffect::StopAction_Implementation(AActor* Instigator)
 	}
 	
 	Super::StopAction_Implementation(Instigator);
-
+	
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Duration);
 	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_Period);
-
+	
 	USActionComponent* Comp = GetOwningComponent();
 	if(Comp)
 	{

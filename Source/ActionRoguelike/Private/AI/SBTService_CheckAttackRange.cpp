@@ -11,29 +11,35 @@ void USBTService_CheckAttackRange::TickNode(UBehaviorTreeComponent& OwnerComp, u
 	//check distance between AI pawn and TargetActor
 
 	UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
-	if(ensure(BlackboardComp))
+	if(!ensure(BlackboardComp))
 	{
-		AActor* TargetActor = Cast<AActor>(BlackboardComp->GetValueAsObject("TargetActor"));
-		if(TargetActor)
+		return;
+	}
+	
+	AAIController* AIController = OwnerComp.GetAIOwner();
+	if(!ensure(AIController))
+	{
+		return;
+	}
+	
+	AActor* TargetActor = Cast<AActor>(BlackboardComp->GetValueAsObject("TargetActor"));
+	if(!TargetActor)
+	{
+		return;
+	}
+	
+	APawn* AIPawn = AIController->GetPawn();
+	if(ensure(AIPawn))
+	{
+		float DistanceTo = (AIPawn->GetActorLocation() - TargetActor->GetActorLocation()).Size();
+		bool bWithinRange = DistanceTo < AttackRangeDistance;
+					
+		bool bHasLineOfSight{};
+		if(bWithinRange)
 		{
-			AAIController* AIController = OwnerComp.GetAIOwner();
-			if(ensure(AIController))
-			{
-				APawn* AIPawn = AIController->GetPawn();
-				if(ensure(AIPawn))
-				{
-					float DistanceTo = (AIPawn->GetActorLocation() - TargetActor->GetActorLocation()).Size();
-					bool bWithinRange = DistanceTo < AttackRangeDistance;
-					
-					bool bHasLineOfSight{};
-					if(bWithinRange)
-					{
-						bHasLineOfSight = AIController->LineOfSightTo(TargetActor);
-					}
-					
-					BlackboardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, (bWithinRange && bHasLineOfSight));
-				}
-			}
+			bHasLineOfSight = AIController->LineOfSightTo(TargetActor);
 		}
+					
+		BlackboardComp->SetValueAsBool(AttackRangeKey.SelectedKeyName, (bWithinRange && bHasLineOfSight));
 	}
 }

@@ -1,31 +1,31 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ActionSystem/SAction_ProjectileAttack.h"
 #include "Projectile/SProjectileBase.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
-
 void USAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
-
+	
 	ACharacter* Character = Cast<ACharacter>(Instigator);
-	if(Character)
+	if(!Character)
 	{
-		Character->PlayAnimMontage(AttackAnim);
-
-		UGameplayStatics::SpawnEmitterAttached(CastingEffect, Character->GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-
-		if(Character->HasAuthority())
-		{
-			FTimerHandle TimerHandle_AttackDelay{};
-			FTimerDelegate TimerDelegate{};
-			TimerDelegate.BindUFunction(this, "AttackDelay_Elapsed", Character);
+		return;
+	}
+	
+	Character->PlayAnimMontage(AttackAnim);
+	
+	UGameplayStatics::SpawnEmitterAttached(CastingEffect, Character->GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
+	
+	if(Character->HasAuthority())
+	{
+		FTimerHandle TimerHandle_AttackDelay{};
+		FTimerDelegate TimerDelegate{};
+		TimerDelegate.BindUFunction(this, "AttackDelay_Elapsed", Character);
 			
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, TimerDelegate, AttackAnimDelay, false);
-		}
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, TimerDelegate, AttackAnimDelay, false);
 	}
 }
 
@@ -39,11 +39,11 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 	
 	FCollisionShape CollisionShape{};
 	CollisionShape.SetSphere(SweepRadius);
-
+	
 	// Ignore Player
 	FCollisionQueryParams CollisionQueryParams{};
 	CollisionQueryParams.AddIgnoredActor(InstigatorCharacter);
-
+	
 	FVector TraceDirection = InstigatorCharacter->GetControlRotation().Vector();
 	
 	// Add sweep radius onto start to avoid the sphere clipping into floor/walls the camera is directly against
@@ -67,8 +67,8 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed(ACharacter* InstigatorCharac
 	FActorSpawnParameters SpawnParameters{};
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParameters.Instigator = InstigatorCharacter;
-
+	
 	GetWorld()->SpawnActor<ASProjectileBase>(ProjectileClass, SpawnTM, SpawnParameters);
-
+	
 	StopAction(InstigatorCharacter);
 }
